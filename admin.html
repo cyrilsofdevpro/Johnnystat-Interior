@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Dashboard — Johnnystar Interior</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: Inter, sans-serif; }
+  </style>
+</head>
+<body class="bg-stone-50 min-h-screen">
+  <header class="bg-white shadow px-6 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="img/logo 1.jpeg" alt="logo" class="h-10 w-10 rounded object-cover">
+        <h1 class="text-2xl serif font-bold">Admin Dashboard</h1>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="logoutBtn" class="px-4 py-2 bg-red-600 text-white rounded">Logout</button>
+        <a href="index.html" class="text-sm text-amber-700">View site →</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto mt-10 px-6">
+    <div id="loginCard" class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-8">
+      <h2 class="text-2xl font-semibold mb-4">Sign in</h2>
+      <form id="adminLoginForm" class="space-y-4">
+        <input id="loginEmail" type="email" placeholder="Email" class="w-full border rounded px-4 py-2" required>
+        <input id="loginPassword" type="password" placeholder="Password" class="w-full border rounded px-4 py-2" required>
+        <button class="w-full bg-amber-700 text-white py-2 rounded">Sign in</button>
+      </form>
+    </div>
+
+    <div id="dashboard" class="hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow p-6">
+          <h3 class="text-xl font-semibold mb-4">Add Product</h3>
+          <form id="productForm" class="space-y-4">
+            <input id="pName" type="text" placeholder="Product name" class="w-full border rounded px-4 py-2" required>
+            <input id="pPrice" type="number" placeholder="Price" class="w-full border rounded px-4 py-2" required>
+            <select id="pCategory" class="w-full border rounded px-4 py-2"></select>
+            <input id="pDesc" type="text" placeholder="Short description / caption" class="w-full border rounded px-4 py-2">
+            <div>
+              <label class="block text-sm mb-2">Product image</label>
+              <input id="pImage" type="file" accept="image/*">
+            </div>
+            <div class="flex gap-3">
+              <button type="submit" class="bg-amber-700 text-white px-4 py-2 rounded">Upload Product</button>
+              <button id="clearProducts" type="button" class="bg-gray-200 px-4 py-2 rounded">Clear All</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h3 class="text-xl font-semibold mb-4">Categories</h3>
+          <form id="catForm" class="flex gap-2">
+            <input id="catName" type="text" placeholder="New category" class="flex-1 border rounded px-3 py-2">
+            <button class="bg-amber-700 text-white px-4 py-2 rounded">Add</button>
+          </form>
+          <div id="catList" class="mt-4 space-y-2"></div>
+        </div>
+      </div>
+
+      <section class="mt-8 bg-white rounded-2xl shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Products</h3>
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </section>
+    </div>
+  </main>
+  <!-- Edit modal -->
+  <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-white rounded-2xl shadow-lg w-full max-w-2xl p-6">
+      <h4 class="text-lg font-semibold mb-3">Edit product</h4>
+      <form id="editForm" class="space-y-3">
+        <input id="eName" type="text" placeholder="Product name" class="w-full border rounded px-3 py-2" required>
+        <input id="ePrice" type="number" placeholder="Price" class="w-full border rounded px-3 py-2" required>
+        <select id="eCategory" class="w-full border rounded px-3 py-2"></select>
+        <input id="eDesc" type="text" placeholder="Caption / description" class="w-full border rounded px-3 py-2">
+        <div>
+          <label class="block text-sm mb-1">Replace image (optional)</label>
+          <input id="eImage" type="file" accept="image/*">
+          <div id="ePreview" class="mt-3"></div>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" id="cancelEdit" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-amber-700 text-white rounded">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="adminToast" class="fixed bottom-6 right-6 space-y-2 z-50"></div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

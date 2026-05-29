@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Johnnystar Interior | Premium Interior & Furniture</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-light: #f5efe6;
+      --bg-dark: #1a1a1a;
+      --text-light: #1f2937;
+      --text-dark: #f3f4f6;
+      --border-light: rgba(120, 113, 108, 0.2);
+      --border-dark: rgba(75, 85, 99, 0.3);
+      --card-light: #ffffff;
+      --card-dark: #2d2d2d;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .serif {
+      font-family: 'Playfair Display', serif;
+    }
+    .smooth-transition {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .fade-in {
+      animation: fadeIn 0.8s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile Menu */
+    #mobile-menu {
+      display: none;
+      position: absolute;
+      top: 70px;
+      left: 0;
+      right: 0;
+      background: white;
+      border-bottom: 1px solid #e7e5e4;
+      z-index: 40;
+      flex-direction: column;
+      padding: 1rem 0;
+    }
+
+    #mobile-menu.active {
+      display: flex;
+    }
+
+    #mobile-menu li {
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    body.dark-mode #mobile-menu {
+      background: #2d2d2d;
+    }
+
+    body.dark-mode #mobile-menu li {
+      border-bottom-color: rgba(75, 85, 99, 0.3);
+    }
+
+    /* Hamburger Button */
+    #hamburger-btn {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+    }
+
+    #hamburger-btn span {
+      width: 25px;
+      height: 3px;
+      background: #1f2937;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    body.dark-mode #hamburger-btn span {
+      background: #f3f4f6;
+    }
+
+    @media (max-width: 768px) {
+      #hamburger-btn {
+        display: flex;
+      }
+    }
+
+    /* Dark mode overrides */
+    body.dark-mode nav {
+      background-color: #2d2d2d;
+      border-bottom-color: rgba(75, 85, 99, 0.3) !important;
+    }
+
+    body.dark-mode .bg-gradient-to-b {
+      background: linear-gradient(to bottom, #1f1f1f, #2a2a2a) !important;
+    }
+
+    body.dark-mode .text-gray-700 {
+      color: #cbd5e1;
+    }
+
+    body.dark-mode .text-stone-900 {
+      color: #f3f4f6;
+    }
+
+    body.dark-mode .bg-white {
+      background-color: #2d2d2d;
+      color: #f3f4f6;
+    }
+
+    body.dark-mode .bg-white\/80 {
+      background-color: rgba(45, 45, 45, 0.8);
+    }
+
+    body.dark-mode .rounded-2xl {
+      background-color: #2d2d2d;
+      color: #f3f4f6;
+    }
+
+    body.dark-mode .border-stone-200\/50 {
+      border-color: rgba(75, 85, 99, 0.3) !important;
+    }
+
+    body.dark-mode .shadow-lg,
+    body.dark-mode .shadow-xl,
+    body.dark-mode .shadow-2xl {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode h2,
+    body.dark-mode h3,
+    body.dark-mode h4,
+    body.dark-mode h5,
+    body.dark-mode h6 {
+      color: #f3f4f6;
+    }
+
+    body.dark-mode .bg-stone-50,
+    body.dark-mode .from-stone-50 {
+      background-color: #2a2a2a !important;
+    }
+
+    body.dark-mode .from-amber-100,
+    body.dark-mode .via-stone-100,
+    body.dark-mode .to-amber-50 {
+      background: linear-gradient(to right, #3f3f3f, #4a4a4a, #454545) !important;
+    }
+
+    body.dark-mode .bg-amber-50 {
+      background-color: #2a2a2a !important;
+    }
+
+    body.dark-mode .bg-gray-100 {
+      background-color: #3a3a3a !important;
+    }
+
+    body.dark-mode .text-gray-600 {
+      color: #b0b9c6 !important;
+    }
+
+    /* Mobile Improvements */
+    @media (max-width: 768px) {
+      nav {
+        padding: 1rem 1.5rem !important;
+      }
+
+      h1 {
+        font-size: 1.25rem !important;
+      }
+
+      h2 {
+        font-size: 1.875rem !important;
+      }
+
+      h3 {
+        font-size: 1.25rem !important;
+      }
+
+      button {
+        padding: 0.625rem 1.25rem !important;
+        font-size: 0.875rem !important;
+      }
+
+      .grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+      }
+
+      section {
+        padding: 2.5rem 1rem !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        font-size: 14px;
+      }
+
+      h1 {
+        font-size: 1rem !important;
+      }
+
+      h2 {
+        font-size: 1.5rem !important;
+      }
+
+      h3 {
+        font-size: 1.125rem !important;
+      }
+
+      p {
+        font-size: 0.875rem !important;
+      }
+
+      section {
+        padding: 2rem 1rem !important;
+      }
+
+      .px-10 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+      }
+
+      .py-20 {
+        padding-top: 2.5rem !important;
+        padding-bottom: 2.5rem !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-stone-50 to-amber-50">
+
+  <!-- NAV -->
+  <nav class="flex justify-between items-center px-10 py-6 border-b border-stone-200/50 relative">
+    <div class="flex items-center gap-3">
+      <img src="img/logo 1.jpeg" alt="Johnnystar Interior Logo" class="h-8 w-8 md:h-10 md:w-10 object-cover rounded">
+      <h1 class="serif font-bold text-lg md:text-2xl tracking-wide text-amber-900">Johnnystar Interior</h1>
+    </div>
+
+    <ul class="hidden md:flex gap-10 text-sm font-medium text-gray-700">
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">
+        <a href="shop.html" class="hover:text-amber-700">Shop</a>
+      </li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">Categories</li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer"><a href="portfolio.html" class="hover:text-amber-700">Portfolio</a></li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer"><a href="#about" class="hover:text-amber-700">About</a></li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">Contact</li>
+    </ul>
+
+    <!-- Mobile Menu -->
+    <ul id="mobile-menu" class="md:hidden">
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">
+        <a href="shop.html" class="hover:text-amber-700">Shop</a>
+      </li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">Categories</li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer"><a href="portfolio.html" class="hover:text-amber-700">Portfolio</a></li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer"><a href="#about" class="hover:text-amber-700">About</a></li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">Contact</li>
+    </ul>
+
+    <div class="flex gap-3 md:gap-6 text-lg md:text-lg cursor-pointer items-center">
+      <span onclick="openSearchModal()" class="hover:scale-110 smooth-transition text-base md:text-lg">🔍</span>
+      <span onclick="openCartModal()" class="hover:scale-110 smooth-transition relative text-base md:text-lg">
+        🛒
+        <span class="cart-badge absolute -top-2 -right-2 bg-amber-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center" style="display: none;">0</span>
+      </span>
+      <span class="hover:scale-110 smooth-transition text-base md:text-lg" onclick="toggleTheme()" id="theme-toggle" title="Toggle dark mode">☀️</span>
+      <span class="hover:scale-110 smooth-transition text-base md:text-lg cursor-pointer" onclick="window.location.href='admin.html'" title="Admin login">👤</span>
+      <button id="hamburger-btn" onclick="toggleMobileMenu()" class="md:hidden">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="flex justify-center items-center px-6 py-16 md:py-24">
+    <div class="relative max-w-7xl w-full rounded-3xl overflow-hidden shadow-2xl h-96 md:h-screen max-h-96 md:max-h-96">
+
+      <!-- Background Image -->
+      <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-amber-100 via-stone-100 to-amber-50 opacity-60"></div>
+      <img src="img/hero.jpg" class="absolute inset-0 w-full h-full object-cover opacity-40">
+
+      <!-- Dark overlay for text clarity -->
+      <div class="absolute inset-0 bg-black/20"></div>
+
+      <!-- Content -->
+      <div class="relative flex flex-col justify-center items-center h-full text-center px-8">
+        <h2 class="serif text-5xl md:text-6xl leading-tight text-stone-900 fade-in">
+          Timeless <span class="italic text-amber-700">comfort</span><br>
+          with naturally crafted
+        </h2>
+
+        <p class="mt-6 text-gray-700 text-base md:text-lg max-w-2xl fade-in" style="animation-delay: 0.2s;">
+          Explore a curated collection of modern furniture designed to bring warmth, balance, and simplicity into your home. Luxury that feels like home.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 mt-8 fade-in w-full sm:w-auto sm:justify-center px-4 sm:px-0" style="animation-delay: 0.4s;">
+          <button class="px-6 sm:px-8 py-2.5 sm:py-3 bg-amber-700 text-white rounded-full shadow-lg hover:bg-amber-800 hover:shadow-xl smooth-transition font-medium text-sm sm:text-base whitespace-nowrap">
+            Shop Now →
+          </button>
+          <button class="px-6 sm:px-8 py-2.5 sm:py-3 bg-white/80 text-amber-700 rounded-full shadow-lg hover:bg-white hover:shadow-xl smooth-transition font-medium text-sm sm:text-base backdrop-blur whitespace-nowrap">
+            Book Consultation
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES SECTION -->
+  <section class="px-6 md:px-10 py-20">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="serif text-4xl md:text-5xl text-center mb-16 text-stone-900">Explore by Category</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Category 1: Living Room -->
+        <div class="group relative rounded-2xl overflow-hidden shadow-lg h-64 md:h-80 cursor-pointer">
+          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 smooth-transition" style="background-image: url('img/img 1.jpg');"></div>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 smooth-transition"></div>
+          <div class="relative h-full flex flex-col justify-end p-6 md:p-8 text-white">
+            <h3 class="serif text-2xl md:text-3xl font-bold" style="color: white;">Living Room</h3>
+            <p class="text-sm mt-2 opacity-90">Sofas, chairs & more</p>
+            <div class="mt-4 text-2xl transform group-hover:translate-x-2 smooth-transition">→</div>
+          </div>
+        </div>
+
+        <!-- Category 2: Office -->
+        <div class="group relative rounded-2xl overflow-hidden shadow-lg h-64 md:h-80 cursor-pointer">
+          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 smooth-transition" style="background-image: url('img/img 3.jpg');"></div>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 smooth-transition"></div>
+          <div class="relative h-full flex flex-col justify-end p-6 md:p-8 text-white">
+            <h3 class="serif text-2xl md:text-3xl font-bold" style="color: white;">Office</h3>
+            <p class="text-sm mt-2 opacity-90">Desks, chairs & storage</p>
+            <div class="mt-4 text-2xl transform group-hover:translate-x-2 smooth-transition">→</div>
+          </div>
+        </div>
+
+        <!-- Category 3: Bedroom -->
+        <div class="group relative rounded-2xl overflow-hidden shadow-lg h-64 md:h-80 cursor-pointer">
+          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 smooth-transition" style="background-image: url('img/img 5.jpg');"></div>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 smooth-transition"></div>
+          <div class="relative h-full flex flex-col justify-end p-6 md:p-8 text-white">
+            <h3 class="serif text-2xl md:text-3xl font-bold" style="color: white;">Bedroom</h3>
+            <p class="text-sm mt-2 opacity-90">Beds, nightstands & more</p>
+            <div class="mt-4 text-2xl transform group-hover:translate-x-2 smooth-transition">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED COLLECTIONS -->
+  <section class="px-6 md:px-10 py-20 bg-white/40 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex justify-between items-center mb-16">
+        <h2 class="serif text-4xl md:text-5xl text-stone-900">Featured Collections</h2>
+        <a href="#" class="text-amber-700 font-semibold hover:text-amber-800 smooth-transition">View All →</a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Collection 1 -->
+        <div class="rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
+          <div class="relative h-80 bg-gradient-to-br from-stone-200 to-amber-100 overflow-hidden">
+            <div class="absolute inset-0 group-hover:scale-105 smooth-transition"></div>
+          </div>
+          <div class="p-8">
+            <h3 class="serif text-2xl text-stone-900 mb-2">Minimalist Living</h3>
+            <p class="text-gray-600 text-sm mb-4">Clean lines, natural materials</p>
+            <button class="text-amber-700 font-semibold hover:text-amber-800 smooth-transition">Explore →</button>
+          </div>
+        </div>
+
+        <!-- Collection 2 -->
+        <div class="rounded-2xl overflow-hidden shadow-lg group cursor-pointer">
+          <div class="relative h-80 bg-gradient-to-br from-amber-200 to-stone-200 overflow-hidden">
+            <div class="absolute inset-0 group-hover:scale-105 smooth-transition"></div>
+          </div>
+          <div class="p-8">
+            <h3 class="serif text-2xl text-stone-900 mb-2">Luxury Comfort</h3>
+            <p class="text-gray-600 text-sm mb-4">Premium fabrics & finishes</p>
+            <button class="text-amber-700 font-semibold hover:text-amber-800 smooth-transition">Explore →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEST SELLERS -->
+  <section class="px-6 md:px-10 py-20">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="serif text-4xl md:text-5xl text-center mb-4 text-stone-900">Best Sellers</h2>
+      <p class="text-center text-gray-600 mb-16">Loved by our customers</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <!-- Product 1 -->
+        <div class="group">
+          <div class="relative h-64 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl smooth-transition bg-gradient-to-br from-stone-100 to-amber-50">
+            <img src="img/img 1.jpg" alt="Modern Comfort Sofa" class="w-full h-full object-cover group-hover:scale-105 smooth-transition">
+            <div class="absolute top-4 right-4 bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Best Seller</div>
+          </div>
+          <div class="mt-6">
+            <h3 class="serif text-lg text-stone-900">Modern Comfort Sofa</h3>
+            <p class="text-sm text-gray-600 mt-1">Premium upholstered collection</p>
+            <div class="flex justify-between items-center mt-4">
+              <span class="text-amber-700 font-bold text-lg">$2,499</span>
+              <button onclick="window.location.href='shop.html'" class="bg-amber-700 text-white px-4 py-2 rounded-full text-sm hover:bg-amber-800 smooth-transition">Shop →</button>
+            </div>
+            <div class="mt-3 flex gap-1">⭐ ⭐ ⭐ ⭐ ⭐ <span class="text-gray-600 text-xs ml-2">(245)</span></div>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="group">
+          <div class="relative h-64 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl smooth-transition bg-gradient-to-br from-amber-100 to-stone-100">
+            <img src="img/img 3.jpg" alt="Executive Desk" class="w-full h-full object-cover group-hover:scale-105 smooth-transition">
+            <div class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">-20%</div>
+          </div>
+          <div class="mt-6">
+            <h3 class="serif text-lg text-stone-900">Executive Desk</h3>
+            <p class="text-sm text-gray-600 mt-1">Solid oak design</p>
+            <div class="flex justify-between items-center mt-4">
+              <span class="text-amber-700 font-bold text-lg">$899</span>
+              <button onclick="window.location.href='shop.html'" class="bg-amber-700 text-white px-4 py-2 rounded-full text-sm hover:bg-amber-800 smooth-transition">Shop →</button>
+            </div>
+            <div class="mt-3 flex gap-1">⭐ ⭐ ⭐ ⭐ ⭐ <span class="text-gray-600 text-xs ml-2">(189)</span></div>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="group">
+          <div class="relative h-64 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl smooth-transition bg-gradient-to-br from-stone-100 to-amber-100">
+            <img src="img/img 2.jpg" alt="Luxury Lounge Chair" class="w-full h-full object-cover group-hover:scale-105 smooth-transition">
+            <div class="absolute top-4 right-4 bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Trending</div>
+          </div>
+          <div class="mt-6">
+            <h3 class="serif text-lg text-stone-900">Luxury Lounge Chair</h3>
+            <p class="text-sm text-gray-600 mt-1">Mid-century modern</p>
+            <div class="flex justify-between items-center mt-4">
+              <span class="text-amber-700 font-bold text-lg">$1,299</span>
+              <button onclick="window.location.href='shop.html'" class="bg-amber-700 text-white px-4 py-2 rounded-full text-sm hover:bg-amber-800 smooth-transition">Shop →</button>
+            </div>
+            <div class="mt-3 flex gap-1">⭐ ⭐ ⭐ ⭐ ⭐ <span class="text-gray-600 text-xs ml-2">(312)</span></div>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="group">
+          <div class="relative h-64 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl smooth-transition bg-gradient-to-br from-amber-50 to-stone-100">
+            <img src="img/img 4.jpg" alt="Marble Coffee Table" class="w-full h-full object-cover group-hover:scale-105 smooth-transition">
+            <div class="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">New</div>
+          </div>
+          <div class="mt-6">
+            <h3 class="serif text-lg text-stone-900">Marble Coffee Table</h3>
+            <p class="text-sm text-gray-600 mt-1">Marble & walnut</p>
+            <div class="flex justify-between items-center mt-4">
+              <span class="text-amber-700 font-bold text-lg">$599</span>
+              <button onclick="window.location.href='shop.html'" class="bg-amber-700 text-white px-4 py-2 rounded-full text-sm hover:bg-amber-800 smooth-transition">Shop →</button>
+            </div>
+            <div class="mt-3 flex gap-1">⭐ ⭐ ⭐ ⭐ ⭐ <span class="text-gray-600 text-xs ml-2">(78)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERIOR PORTFOLIO / INSPIRATION -->
+  <section class="px-6 md:px-10 py-20 bg-white/40 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="serif text-4xl md:text-5xl text-center mb-16 text-stone-900">Interior Inspiration</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Room 1 -->
+        <div class="group rounded-2xl overflow-hidden shadow-lg cursor-pointer relative h-80">
+          <div class="absolute inset-0 bg-gradient-to-br from-stone-300 to-amber-200 group-hover:from-stone-400 group-hover:to-amber-300 smooth-transition"></div>
+          <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 smooth-transition"></div>
+          <div class="relative h-full flex flex-col justify-end p-8 text-white">
+            <h3 class="serif text-2xl font-bold">Modern Living Room</h3>
+            <p class="text-sm mt-2 opacity-90">5 items used • Shop this room</p>
+            <div class="mt-4 text-2xl transform group-hover:translate-x-2 smooth-transition">→</div>
+          </div>
+        </div>
+
+        <!-- Room 2 -->
+        <div class="group rounded-2xl overflow-hidden shadow-lg cursor-pointer relative h-80">
+          <div class="absolute inset-0 bg-gradient-to-br from-amber-300 to-stone-300 group-hover:from-amber-400 group-hover:to-stone-400 smooth-transition"></div>
+          <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 smooth-transition"></div>
+          <div class="relative h-full flex flex-col justify-end p-8 text-white">
+            <h3 class="serif text-2xl font-bold">Home Office</h3>
+            <p class="text-sm mt-2 opacity-90">8 items used • Shop this room</p>
+            <div class="mt-4 text-2xl transform group-hover:translate-x-2 smooth-transition">→</div>
+          </div>
+        </div>
+
+        <!-- Room 3 -->
+        <div class="group rounded-2xl overflow-hidden shadow-lg cursor-pointer relative h-80">
+          <div class="absolute inset-0 bg-gradient-to-br from-stone-200 to-amber-100 group-hover:from-stone-300 group-hover:to-amber-200 smooth-transition"></div>
+          <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 smooth-transition"></div>
+          <div class="relative h-full flex flex-col justify-end p-8 text-white">
+            <h3 class="serif text-2xl font-bold">Luxury Bedroom</h3>
+            <p class="text-sm mt-2 opacity-90">6 items used • Shop this room</p>
+            <div class="mt-4 text-2xl transform group-hover:translate-x-2 smooth-transition">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section id="about" class="px-6 md:px-10 py-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <!-- About Content -->
+        <div>
+          <h2 class="serif text-4xl md:text-5xl text-stone-900 mb-6">About Johnnystar Interior</h2>
+          <p class="text-gray-700 text-lg mb-4 leading-relaxed">
+            With over a decade of experience in premium interior design and furniture curation, Johnnystar Interior has become a trusted name in transforming spaces into timeless sanctuaries of comfort and elegance.
+          </p>
+          <p class="text-gray-700 text-lg mb-4 leading-relaxed">
+            We believe that every home tells a story. Our mission is to help you craft a narrative through carefully selected pieces that blend functionality with aesthetic beauty. From minimalist modern designs to luxury classics, we source only the finest materials and craftsmanship.
+          </p>
+          <p class="text-gray-700 text-lg mb-8 leading-relaxed">
+            Our team of experienced interior designers work closely with clients to understand their vision, lifestyle, and preferences. We don't just sell furniture—we create personalized experiences and lasting relationships.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <button onclick="window.location.href='shop.html'" class="px-8 py-3 bg-amber-700 text-white rounded-full font-semibold hover:bg-amber-800 smooth-transition">
+              Explore Collection
+            </button>
+            <button class="px-8 py-3 border-2 border-amber-700 text-amber-700 rounded-full font-semibold hover:bg-amber-50 smooth-transition">
+              Book Consultation
+            </button>
+          </div>
+        </div>
+
+        <!-- About Stats -->
+        <div class="space-y-8">
+          <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
+            <h3 class="serif text-3xl font-bold text-amber-700 mb-2">10+</h3>
+            <p class="text-gray-700 font-semibold">Years of Experience</p>
+            <p class="text-gray-600 text-sm mt-2">Dedicated to premium interior design excellence</p>
+          </div>
+          <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
+            <h3 class="serif text-3xl font-bold text-amber-700 mb-2">500+</h3>
+            <p class="text-gray-700 font-semibold">Happy Clients</p>
+            <p class="text-gray-600 text-sm mt-2">Transformed homes across the region</p>
+          </div>
+          <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
+            <h3 class="serif text-3xl font-bold text-amber-700 mb-2">1000+</h3>
+            <p class="text-gray-700 font-semibold">Premium Products</p>
+            <p class="text-gray-600 text-sm mt-2">Handpicked from top global brands</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin panel moved to separate admin.html -->
+
+  <!-- VALUES SECTION -->
+  <section class="px-6 md:px-10 py-20 bg-white/40 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="serif text-4xl md:text-5xl text-center mb-16 text-stone-900">Our Values</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="text-5xl mb-4">✨</div>
+          <h3 class="serif text-2xl text-stone-900 mb-3">Quality</h3>
+          <p class="text-gray-700">We believe in uncompromising quality. Every piece is carefully vetted to ensure it meets our high standards of craftsmanship and durability.</p>
+        </div>
+        <div class="text-center">
+          <div class="text-5xl mb-4">🎨</div>
+          <h3 class="serif text-2xl text-stone-900 mb-3">Design Excellence</h3>
+          <p class="text-gray-700">Our designs blend timeless aesthetics with modern functionality, creating spaces that are both beautiful and livable for years to come.</p>
+        </div>
+        <div class="text-center">
+          <div class="text-5xl mb-4">❤️</div>
+          <h3 class="serif text-2xl text-stone-900 mb-3">Customer Care</h3>
+          <p class="text-gray-700">Your satisfaction is our priority. We provide personalized service, expert consultation, and support at every step of your design journey.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="px-6 md:px-10 py-20">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="serif text-4xl md:text-5xl text-center mb-16 text-stone-900">What Our Clients Say</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Testimonial 1 -->
+        <div class="bg-white rounded-2xl p-8 shadow-md smooth-transition hover:shadow-lg">
+          <div class="flex gap-1 mb-4">⭐ ⭐ ⭐ ⭐ ⭐</div>
+          <p class="text-gray-700 italic mb-6">"The quality is exceptional and the design process was so easy. My home has never looked better!"</p>
+          <div>
+            <p class="font-semibold text-stone-900">Sarah Mitchell</p>
+            <p class="text-sm text-gray-600">Brooklyn, NY</p>
+          </div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="bg-white rounded-2xl p-8 shadow-md smooth-transition hover:shadow-lg">
+          <div class="flex gap-1 mb-4">⭐ ⭐ ⭐ ⭐ ⭐</div>
+          <p class="text-gray-700 italic mb-6">"Premium doesn't have to be pretentious. MOVÉ proved it. Love every piece!"</p>
+          <div>
+            <p class="font-semibold text-stone-900">James Chen</p>
+            <p class="text-sm text-gray-600">San Francisco, CA</p>
+          </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="bg-white rounded-2xl p-8 shadow-md smooth-transition hover:shadow-lg">
+          <div class="flex gap-1 mb-4">⭐ ⭐ ⭐ ⭐ ⭐</div>
+          <p class="text-gray-700 italic mb-6">"The consultation service helped me reimagine my space. Highly recommend!"</p>
+          <div>
+            <p class="font-semibold text-stone-900">Emma Rodriguez</p>
+            <p class="text-sm text-gray-600">Miami, FL</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section class="px-6 md:px-10 py-20 bg-gradient-to-r from-amber-700 to-stone-700">
+    <div class="max-w-4xl mx-auto text-center text-white">
+      <h2 class="serif text-4xl md:text-5xl mb-6">Ready to Transform Your Space?</h2>
+      <p class="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+        Let our interior design experts help you create the home of your dreams. Book a free consultation today.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+        <button onclick="window.location.href='shop.html'" class="px-6 sm:px-8 py-2.5 sm:py-4 bg-white text-amber-700 rounded-full font-semibold hover:bg-stone-100 smooth-transition shadow-lg text-sm sm:text-base">
+          Shop the Collection
+        </button>
+        <button class="px-6 sm:px-8 py-2.5 sm:py-4 border-2 border-white text-white rounded-full font-semibold hover:bg-white/10 smooth-transition text-sm sm:text-base">
+          Book Consultation →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-stone-900 text-stone-300 px-6 md:px-10 py-12 md:py-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-8 md:mb-12">
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <img src="img/logo 2.jpeg" alt="Johnnystar Interior Logo" class="h-8 w-8 object-cover rounded">
+            <h3 class="serif text-white text-xl font-bold">Johnnystar Interior</h3>
+          </div>
+          <p class="text-sm">Premium interior design & furniture. Timeless comfort for modern living.</p>
+          <div class="mt-4 space-y-2 text-sm">
+            <p>📞 <a href="tel:08066283577" class="hover:text-white smooth-transition">08066283577</a></p>
+            <p>📧 <a href="mailto:Johnngwu2015@gmail.com" class="hover:text-white smooth-transition">Johnngwu2015@gmail.com</a></p>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Shop</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="hover:text-white smooth-transition cursor-pointer">All Products</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Categories</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">New Arrivals</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Best Sellers</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Company</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="hover:text-white smooth-transition cursor-pointer">About</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Blog</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Portfolio</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Contact</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Support</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="hover:text-white smooth-transition cursor-pointer">FAQ</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Shipping</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Returns</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Privacy</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="border-t border-stone-700 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+        <p class="text-xs sm:text-sm text-center md:text-left">&copy; 2026 Johnnystar Interior. Design & developed by Sofdev Inc  All rights reserved. | Premium Interior Design</p>
+        <div class="flex gap-4 md:gap-6 text-sm">
+          <span class="hover:text-white smooth-transition cursor-pointer">Facebook</span>
+          <a href="https://www.instagram.com/johnnystarinterior?igsh=MXdsb2hxMXB5OHluYg==" target="_blank" rel="noopener noreferrer" class="hover:text-white smooth-transition cursor-pointer">Instagram</a>
+          <span class="hover:text-white smooth-transition cursor-pointer">Pinterest</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('active');
+    }
+
+    // Close menu when a link is clicked
+    document.querySelectorAll('#mobile-menu li').forEach(item => {
+      item.addEventListener('click', () => {
+        document.getElementById('mobile-menu').classList.remove('active');
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+

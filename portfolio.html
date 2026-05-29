@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio | Johnnystar Interior - Premium Interior Design</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-light: #f5efe6;
+      --bg-dark: #1a1a1a;
+      --text-light: #1f2937;
+      --text-dark: #f3f4f6;
+      --border-light: rgba(120, 113, 108, 0.2);
+      --border-dark: rgba(75, 85, 99, 0.3);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .serif {
+      font-family: 'Playfair Display', serif;
+    }
+
+    .smooth-transition {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .fade-in {
+      animation: fadeIn 0.8s ease-in forwards;
+      opacity: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Portfolio sections */
+    section {
+      opacity: 1;
+    }
+
+    .portfolio-header {
+      background: linear-gradient(135deg, rgba(120, 113, 108, 0.05) 0%, rgba(180, 83, 9, 0.05) 100%);
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mobile Menu */
+    #mobile-menu {
+      display: none;
+      position: absolute;
+      top: 70px;
+      left: 0;
+      right: 0;
+      background: white;
+      border-bottom: 1px solid #e7e5e4;
+      z-index: 40;
+      flex-direction: column;
+      padding: 1rem 0;
+    }
+
+    #mobile-menu.active {
+      display: flex;
+    }
+
+    #mobile-menu li {
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    body.dark-mode #mobile-menu {
+      background: #2d2d2d;
+    }
+
+    body.dark-mode #mobile-menu li {
+      border-bottom-color: rgba(75, 85, 99, 0.3);
+    }
+
+    /* Hamburger Button */
+    #hamburger-btn {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+    }
+
+    #hamburger-btn span {
+      width: 25px;
+      height: 3px;
+      background: #1f2937;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    body.dark-mode #hamburger-btn span {
+      background: #f3f4f6;
+    }
+
+    /* Dark mode overrides */
+    body.dark-mode nav {
+      background-color: #2d2d2d;
+      border-bottom-color: rgba(75, 85, 99, 0.3) !important;
+    }
+
+    body.dark-mode .text-gray-700 {
+      color: #cbd5e1;
+    }
+
+    body.dark-mode .text-stone-900 {
+      color: #f3f4f6;
+    }
+
+    body.dark-mode .bg-white {
+      background-color: #2d2d2d;
+      color: #f3f4f6;
+    }
+
+    body.dark-mode .rounded-2xl {
+      background-color: #2d2d2d;
+      color: #f3f4f6;
+    }
+
+    body.dark-mode .border-stone-200\/50 {
+      border-color: rgba(75, 85, 99, 0.3) !important;
+    }
+
+    body.dark-mode .shadow-lg,
+    body.dark-mode .shadow-xl {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode h2,
+    body.dark-mode h3,
+    body.dark-mode h4 {
+      color: #f3f4f6;
+    }
+
+    body.dark-mode .text-gray-600 {
+      color: #b0b9c6 !important;
+    }
+
+    /* Dark mode portfolio */
+    body.dark-mode .portfolio-header {
+      background: linear-gradient(135deg, rgba(45, 45, 45, 0.8) 0%, rgba(70, 50, 30, 0.8) 100%);
+    }
+
+    body.dark-mode section.px-6.md\\:px-10 {
+      background-color: #2d2d2d;
+    }
+
+    body.dark-mode .bg-white {
+      background-color: #2d2d2d !important;
+    }
+
+    @media (max-width: 768px) {
+      #hamburger-btn {
+        display: flex;
+      }
+
+      h1 {
+        font-size: 1.125rem !important;
+      }
+
+      h2 {
+        font-size: 1.5rem !important;
+      }
+
+      section {
+        padding: 2rem 1rem !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-stone-50 to-amber-50">
+
+  <!-- NAV -->
+  <nav class="flex justify-between items-center px-10 py-6 border-b border-stone-200/50 relative">
+    <a href="index.html" class="flex items-center gap-3">
+      <img src="img/logo 1.jpeg" alt="Johnnystar Interior Logo" class="h-8 w-8 md:h-10 md:w-10 object-cover rounded">
+      <h1 class="serif font-bold text-lg md:text-2xl tracking-wide text-amber-900">Johnnystar Interior</h1>
+    </a>
+
+    <ul class="hidden md:flex gap-10 text-sm font-medium text-gray-700">
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">
+        <a href="shop.html" class="hover:text-amber-700">Shop</a>
+      </li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">Categories</li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer"><a href="portfolio.html" class="text-amber-700 border-b-2 border-amber-700">Portfolio</a></li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer"><a href="index.html#about" class="hover:text-amber-700">About</a></li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">Contact</li>
+    </ul>
+
+    <!-- Mobile Menu -->
+    <ul id="mobile-menu" class="md:hidden">
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">
+        <a href="shop.html" class="hover:text-amber-700">Shop</a>
+      </li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">Categories</li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer"><a href="portfolio.html" class="text-amber-700">Portfolio</a></li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer"><a href="index.html#about" class="hover:text-amber-700">About</a></li>
+      <li class="hover:text-amber-700 smooth-transition cursor-pointer">Contact</li>
+    </ul>
+
+    <div class="flex gap-3 md:gap-6 text-lg md:text-lg cursor-pointer items-center">
+      <span class="hover:scale-110 smooth-transition text-base md:text-lg">🔍</span>
+      <span class="hover:scale-110 smooth-transition relative text-base md:text-lg">
+        🛒
+        <span class="cart-badge absolute -top-2 -right-2 bg-amber-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center" style="display: none;">0</span>
+      </span>
+      <span class="hover:scale-110 smooth-transition text-base md:text-lg" onclick="toggleTheme()" id="theme-toggle" title="Toggle dark mode">☀️</span>
+      <span class="hover:scale-110 smooth-transition text-base md:text-lg hidden md:inline">👤</span>
+      <button id="hamburger-btn" onclick="toggleMobileMenu()" class="md:hidden">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- PORTFOLIO HEADER -->
+  <section class="portfolio-header px-6 md:px-10 py-16 md:py-24">
+    <div class="max-w-7xl mx-auto text-center">
+      <h1 class="serif text-4xl md:text-5xl text-amber-900 mb-6 fade-in font-bold">Our Portfolio</h1>
+      <p class="text-gray-800 text-base md:text-lg max-w-3xl mx-auto fade-in font-medium" style="animation-delay: 0.2s;">
+        Explore our curated collection of stunning interior design projects that showcase our commitment to excellence, creativity, and client satisfaction.
+      </p>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO GRID -->
+  <section class="px-6 md:px-10 py-20 bg-white">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Project 1 -->
+        <div class="group rounded-2xl overflow-hidden shadow-lg cursor-pointer fade-in relative h-64 md:h-80">
+          <div class="absolute inset-0 h-64 md:h-80 bg-cover bg-center group-hover:scale-110 smooth-transition" style="background-image: url('img/img 1.jpg');"></div>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/60 smooth-transition z-10"></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white z-20">
+            <h3 class="serif text-2xl font-bold">Modern Living Sanctuary</h3>
+            <p class="text-sm mt-2 opacity-90">Contemporary design with luxury comfort</p>
+            <button class="mt-4 text-amber-400 font-semibold hover:text-white smooth-transition w-fit">View Project →</button>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="group rounded-2xl overflow-hidden shadow-lg cursor-pointer fade-in relative h-64 md:h-80" style="animation-delay: 0.1s;">
+          <div class="absolute inset-0 h-64 md:h-80 bg-cover bg-center group-hover:scale-110 smooth-transition" style="background-image: url('img/img 2.jpg');"></div>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/60 smooth-transition z-10"></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white z-20">
+            <h3 class="serif text-2xl font-bold">Elegant Living Room</h3>
+            <p class="text-sm mt-2 opacity-90">Timeless elegance meets modern comfort</p>
+            <button class="mt-4 text-amber-400 font-semibold hover:text-white smooth-transition w-fit">View Project →</button>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="group rounded-2xl overflow-hidden shadow-lg cursor-pointer fade-in relative h-64 md:h-80" style="animation-delay: 0.2s;">
+          <div class="absolute inset-0 h-64 md:h-80 bg-cover bg-center group-hover:scale-110 smooth-transition" style="background-image: url('img/img 3.jpg');"></div>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/60 smooth-transition z-10"></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white z-20">
+            <h3 class="serif text-2xl font-bold">Professional Office Space</h3>
+            <p class="text-sm mt-2 opacity-90">Productive workspace with style</p>
+            <button class="mt-4 text-amber-400 font-semibold hover:text-white smooth-transition w-fit">View Project →</button>
+          </div>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="group rounded-2xl overflow-hidden shadow-lg cursor-pointer fade-in relative h-64 md:h-80" style="animation-delay: 0.3s;">
+          <div class="absolute inset-0 h-64 md:h-80 bg-cover bg-center group-hover:scale-110 smooth-transition" style="background-image: url('img/img 4.jpg');"></div>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/60 smooth-transition z-10"></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white z-20">
+            <h3 class="serif text-2xl font-bold">Minimalist Coffee Table</h3>
+            <p class="text-sm mt-2 opacity-90">Clean lines and natural elegance</p>
+            <button class="mt-4 text-amber-400 font-semibold hover:text-white smooth-transition w-fit">View Project →</button>
+          </div>
+        </div>
+
+        <!-- Project 5 -->
+        <div class="group rounded-2xl overflow-hidden shadow-lg cursor-pointer fade-in relative h-64 md:h-80" style="animation-delay: 0.4s;">
+          <div class="absolute inset-0 h-64 md:h-80 bg-cover bg-center group-hover:scale-110 smooth-transition" style="background-image: url('img/img 5.jpg');"></div>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/60 smooth-transition z-10"></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white z-20">
+            <h3 class="serif text-2xl font-bold">Luxury Bedroom Suite</h3>
+            <p class="text-sm mt-2 opacity-90">Premium comfort and sophistication</p>
+            <button class="mt-4 text-amber-400 font-semibold hover:text-white smooth-transition w-fit">View Project →</button>
+          </div>
+        </div>
+
+        <!-- Project 6 -->
+        <div class="group rounded-2xl overflow-hidden shadow-lg cursor-pointer fade-in relative h-64 md:h-80" style="animation-delay: 0.5s;">
+          <div class="absolute inset-0 h-64 md:h-80 bg-cover bg-center group-hover:scale-110 smooth-transition" style="background-image: url('img/img 6.jpg');"></div>
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/60 smooth-transition z-10"></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white z-20">
+            <h3 class="serif text-2xl font-bold">Storage Solution Design</h3>
+            <p class="text-sm mt-2 opacity-90">Functional elegance for organized living</p>
+            <button class="mt-4 text-amber-400 font-semibold hover:text-white smooth-transition w-fit">View Project →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section class="px-6 md:px-10 py-20 bg-gradient-to-r from-amber-700 to-stone-700">
+    <div class="max-w-4xl mx-auto text-center text-white">
+      <h2 class="serif text-4xl md:text-5xl mb-6">Ready to Start Your Project?</h2>
+      <p class="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+        Let our design experts transform your space into something extraordinary. Schedule a consultation with our team today.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button onclick="window.location.href='shop.html'" class="px-8 py-4 bg-white text-amber-700 rounded-full font-semibold hover:bg-stone-100 smooth-transition shadow-lg">
+          Explore Products
+        </button>
+        <button class="px-8 py-4 border-2 border-white text-white rounded-full font-semibold hover:bg-white/10 smooth-transition">
+          Book Consultation →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-stone-900 text-stone-300 px-6 md:px-10 py-12 md:py-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-8 md:mb-12">
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <img src="img/logo 2.jpeg" alt="Johnnystar Interior Logo" class="h-8 w-8 object-cover rounded">
+            <h3 class="serif text-white text-xl font-bold">Johnnystar Interior</h3>
+          </div>
+          <p class="text-sm">Premium interior design & furniture. Timeless comfort for modern living.</p>
+          <div class="mt-4 space-y-2 text-sm">
+            <p>📞 <a href="tel:08066283577" class="hover:text-white smooth-transition">08066283577</a></p>
+            <p>📧 <a href="mailto:Johnngwu2015@gmail.com" class="hover:text-white smooth-transition">Johnngwu2015@gmail.com</a></p>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Shop</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="hover:text-white smooth-transition cursor-pointer">All Products</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Categories</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">New Arrivals</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Best Sellers</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Company</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="hover:text-white smooth-transition cursor-pointer"><a href="index.html#about">About</a></li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Blog</li>
+            <li class="hover:text-white smooth-transition cursor-pointer"><a href="portfolio.html">Portfolio</a></li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Contact</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Support</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="hover:text-white smooth-transition cursor-pointer">FAQ</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Shipping</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Returns</li>
+            <li class="hover:text-white smooth-transition cursor-pointer">Privacy</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="border-t border-stone-700 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+        <p class="text-xs sm:text-sm text-center md:text-left">&copy; 2026 Johnnystar Interior. All rights reserved. | Premium Interior Design</p>
+        <div class="flex gap-4 md:gap-6 text-sm">
+          <span class="hover:text-white smooth-transition cursor-pointer">Facebook</span>
+          <a href="https://www.instagram.com/johnnystarinterior?igsh=MXdsb2hxMXB5OHluYg==" target="_blank" rel="noopener noreferrer" class="hover:text-white smooth-transition cursor-pointer">Instagram</a>
+          <span class="hover:text-white smooth-transition cursor-pointer">Pinterest</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('active');
+    }
+
+    // Close menu when a link is clicked
+    document.querySelectorAll('#mobile-menu li').forEach(item => {
+      item.addEventListener('click', () => {
+        document.getElementById('mobile-menu').classList.remove('active');
+      });
+    });
+  </script>
+</body>
+</html>

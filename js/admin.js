@@ -3,9 +3,20 @@ const ADMIN_USERNAME = 'Admin123@gmail.com';
 const ADMIN_PASSWORD = 'Admin1234';
 
 const adminState = {
-  categories: JSON.parse(localStorage.getItem('adminCategories')) || ['Living Room','Office','Bedroom'],
-  products: JSON.parse(localStorage.getItem('adminProducts')) || []
+  categories: ['Living Room','Office','Bedroom'],
+  products: []
 };
+
+function readAdminState(){
+  try {
+    const cats = JSON.parse(localStorage.getItem('adminCategories'));
+    const prods = JSON.parse(localStorage.getItem('adminProducts'));
+    if (Array.isArray(cats)) adminState.categories = cats;
+    if (Array.isArray(prods)) adminState.products = prods;
+  } catch (err) {
+    console.warn('Could not parse admin state from localStorage', err);
+  }
+}
 
 function saveAdminState(){
   localStorage.setItem('adminCategories', JSON.stringify(adminState.categories));
@@ -14,49 +25,12 @@ function saveAdminState(){
 
 function $(sel){return document.querySelector(sel)}
 
-document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = $('#adminLoginForm');
-  const loginCard = $('#loginCard');
-  const dashboard = $('#dashboard');
+let dashboardInitialized = false;
 
-  // logout button
-  $('#logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('adminAuth');
-    window.location.href = 'index.html';
-  });
+function initDashboardHandlers(){
+  if (dashboardInitialized) return;
+  dashboardInitialized = true;
 
-  // if already authenticated
-  if (localStorage.getItem('adminAuth') === 'true') {
-    loginCard.classList.add('hidden');
-    dashboard.classList.remove('hidden');
-    mountDashboard();
-  }
-
-  loginForm.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const email = $('#loginEmail').value.trim();
-    const password = $('#loginPassword').value.trim();
-    if (email === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      localStorage.setItem('adminAuth','true');
-      loginCard.classList.add('hidden');
-      dashboard.classList.remove('hidden');
-      mountDashboard();
-    } else {
-      showToast('Invalid credentials', 'error');
-    }
-  });
-});
-
-function mountDashboard(){
-  // populate category select
-  const sel = $('#pCategory');
-  sel.innerHTML = adminState.categories.map(c=>`<option value="${c}">${c}</option>`).join('');
-
-  // render category list
-  renderCategories();
-  renderProducts();
-
-  // handlers
   $('#catForm').addEventListener('submit',(e)=>{
     e.preventDefault();
     const name = $('#catName').value.trim();
@@ -81,7 +55,6 @@ function mountDashboard(){
       image = await fileToDataUrl(file);
     }
 
-    // validation
     if (!name) { showToast('Name is required','error'); return; }
     if (!price || price <= 0) { showToast('Enter a valid price','error'); return; }
 
@@ -108,6 +81,49 @@ function mountDashboard(){
     saveAdminState();
     renderProducts();
   });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = $('#adminLoginForm');
+  const loginCard = $('#loginCard');
+  const dashboard = $('#dashboard');
+
+  readAdminState();
+
+  // logout button
+  $('#logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('adminAuth');
+    window.location.href = 'index.html';
+  });
+
+  // if already authenticated
+  if (localStorage.getItem('adminAuth') === 'true') {
+    loginCard.classList.add('hidden');
+    dashboard.classList.remove('hidden');
+    initDashboardHandlers();
+    mountDashboard();
+  }
+
+  loginForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const email = $('#loginEmail').value.trim();
+    const password = $('#loginPassword').value.trim();
+    if (email === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      localStorage.setItem('adminAuth','true');
+      loginCard.classList.add('hidden');
+      dashboard.classList.remove('hidden');
+      mountDashboard();
+    } else {
+      showToast('Invalid credentials', 'error');
+    }
+  });
+});
+
+function mountDashboard(){
+  const sel = $('#pCategory');
+  if (sel) sel.innerHTML = adminState.categories.map(c=>`<option value="${c}">${c}</option>`).join('');
+  renderCategories();
+  renderProducts();
 }
 
 function fileToDataUrl(file){
@@ -237,4 +253,4 @@ function showEditModal(id){
 
 window.removeCategory = removeCategory;
 window.deleteProduct = deleteProduct;
-window.editProduct = editProduct;
+window.showEditModal = showEditModal;

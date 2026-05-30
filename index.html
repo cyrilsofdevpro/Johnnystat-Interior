@@ -276,6 +276,7 @@
       <li class="hover:text-amber-700 smooth-transition cursor-pointer">
         <a href="#categories" class="hover:text-amber-700">Categories</a>
       </li>
+    </ul>
 
     <div class="flex gap-3 md:gap-6 text-lg md:text-lg cursor-pointer items-center">
       <span onclick="openSearchModal()" class="hover:scale-110 smooth-transition text-base md:text-lg">🔍</span>
@@ -752,6 +753,14 @@
         document.getElementById('mobile-menu').classList.remove('active');
       });
     });
+      // Close mobile menu when a mobile item is clicked
+      document.addEventListener('click', (e) => {
+        const menu = document.getElementById('mobile-menu');
+        if (!menu) return;
+        if (e.target.closest && e.target.closest('#mobile-menu li')) {
+          menu.classList.remove('active');
+        }
+      });
   </script>
 </body>
 </html>

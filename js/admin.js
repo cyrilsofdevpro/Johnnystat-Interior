@@ -81,6 +81,52 @@ function initDashboardHandlers(){
     saveAdminState();
     renderProducts();
   });
+
+  // Export/Import handlers
+  const exportBtn = $('#exportData');
+  const importBtn = $('#importBtn');
+  const importFile = $('#importFile');
+  if (exportBtn) exportBtn.addEventListener('click', exportAdminData);
+  if (importBtn && importFile) importBtn.addEventListener('click', ()=> importFile.click());
+  if (importFile) importFile.addEventListener('change', (e)=>{
+    const f = e.target.files[0];
+    if (f) handleImportFile(f);
+  });
+}
+
+function exportAdminData(){
+  const data = { categories: adminState.categories, products: adminState.products };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'admin-data.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Exported admin data','success');
+}
+
+function handleImportFile(file){
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if (Array.isArray(parsed.categories) && Array.isArray(parsed.products)){
+        adminState.categories = parsed.categories;
+        adminState.products = parsed.products;
+        saveAdminState();
+        mountDashboard();
+        showToast('Imported admin data','success');
+      } else {
+        showToast('Invalid import file','error');
+      }
+    } catch(err){
+      showToast('Error importing file','error');
+    }
+  };
+  reader.readAsText(file);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

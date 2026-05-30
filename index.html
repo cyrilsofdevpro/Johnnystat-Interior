@@ -41,11 +41,20 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .fade-in {
-      animation: fadeIn 0.8s ease-in;
+      animation: flowInFade 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      opacity: 0;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes flowInFade {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes zoomInSlow {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     /* Mobile Menu */
@@ -300,24 +309,24 @@
     <div class="relative max-w-7xl w-full rounded-3xl overflow-hidden shadow-2xl h-96 md:h-screen max-h-96 md:max-h-96">
 
       <!-- Background Image -->
-      <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-amber-100 via-stone-100 to-amber-50 opacity-60"></div>
-      <img src="img/hero.jpg" class="absolute inset-0 w-full h-full object-cover opacity-40">
+      <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-amber-100 via-stone-100 to-amber-50 opacity-60 animate-hero-bg" style="animation: zoomInSlow 1.5s ease-out forwards;"></div>
+      <img src="img/hero.jpg" class="absolute inset-0 w-full h-full object-cover opacity-40 animate-hero-bg" style="animation: zoomInSlow 1.5s ease-out forwards;">
 
       <!-- Dark overlay for text clarity -->
       <div class="absolute inset-0 bg-black/20"></div>
 
       <!-- Content -->
       <div class="relative flex flex-col justify-center items-center h-full text-center px-8">
-        <h2 class="serif text-5xl md:text-6xl leading-tight text-stone-900 fade-in">
+        <h2 class="serif text-5xl md:text-6xl leading-tight text-stone-900 fade-in" style="animation-delay: 0s;">
           Timeless <span class="italic text-amber-700">comfort</span><br>
           with naturally crafted
         </h2>
 
-        <p class="mt-6 text-gray-700 text-base md:text-lg max-w-2xl fade-in" style="animation-delay: 0.2s;">
+        <p class="mt-6 text-gray-700 text-base md:text-lg max-w-2xl fade-in" style="animation-delay: 0.3s;">
           Explore a curated collection of modern furniture designed to bring warmth, balance, and simplicity into your home. Luxury that feels like home.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-4 mt-8 fade-in w-full sm:w-auto sm:justify-center px-4 sm:px-0" style="animation-delay: 0.4s;">
+        <div class="flex flex-col sm:flex-row gap-4 mt-8 fade-in w-full sm:w-auto sm:justify-center px-4 sm:px-0" style="animation-delay: 0.6s;">
           <button onclick="window.location.href='shop.html#categories'" class="px-6 sm:px-8 py-2.5 sm:py-3 bg-amber-700 text-white rounded-full shadow-lg hover:bg-amber-800 hover:shadow-xl smooth-transition font-medium text-sm sm:text-base whitespace-nowrap">
             Shop Now →
           </button>

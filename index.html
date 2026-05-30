@@ -279,6 +279,7 @@
     </ul>
 
     <div class="flex gap-3 md:gap-6 text-lg md:text-lg cursor-pointer items-center">
+      <div id="authContainer"></div>
       <span onclick="openSearchModal()" class="hover:scale-110 smooth-transition text-base md:text-lg">🔍</span>
       <span onclick="openCartModal()" class="hover:scale-110 smooth-transition relative text-base md:text-lg">
         🛒
@@ -740,6 +741,7 @@
     </div>
   </footer>
 
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script>
     function toggleMobileMenu() {
@@ -762,6 +764,31 @@
         }
       });
   </script>
+
+  <!-- Auth modal -->
+  <div id="authModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
+      <button id="authClose" class="float-right">✕</button>
+      <h3 class="serif text-xl font-semibold mb-3">Account</h3>
+      <div id="loginForm">
+        <form class="space-y-3">
+          <input id="liEmail" type="email" placeholder="Email" class="w-full border rounded px-3 py-2" required>
+          <input id="liPassword" type="password" placeholder="Password" class="w-full border rounded px-3 py-2" required>
+          <button type="submit" class="w-full bg-amber-700 text-white py-2 rounded">Sign in</button>
+        </form>
+        <p class="text-sm mt-3">Don't have an account? <a id="switchToSignup" class="text-amber-700 cursor-pointer">Create one</a></p>
+      </div>
+      <div id="signupForm" class="hidden">
+        <form class="space-y-3">
+          <input id="suName" type="text" placeholder="Full name" class="w-full border rounded px-3 py-2">
+          <input id="suEmail" type="email" placeholder="Email" class="w-full border rounded px-3 py-2" required>
+          <input id="suPassword" type="password" placeholder="Password" class="w-full border rounded px-3 py-2" required>
+          <button type="submit" class="w-full bg-amber-700 text-white py-2 rounded">Create account</button>
+        </form>
+        <p class="text-sm mt-3">Already have an account? <a id="switchToLogin" class="text-amber-700 cursor-pointer">Sign in</a></p>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
 

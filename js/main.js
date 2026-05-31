@@ -12,6 +12,54 @@ const state = {
   currentPage: 'home',
 };
 
+const adminState = {
+  categories: [],
+  products: []
+};
+
+const homepageFeaturedDefaults = [
+  {
+    id: 1,
+    name: 'Modern Comfort Sofa',
+    price: 2499,
+    image: 'img/img 1.jpg',
+    description: 'Premium upholstered sofa with deep seating and elegant design',
+    rating: 4.8,
+    reviews: 245,
+    badge: 'Best Seller'
+  },
+  {
+    id: 2,
+    name: 'Luxury Lounge Chair',
+    price: 1299,
+    image: 'img/img 2.jpg',
+    description: 'Mid-century modern lounge chair with premium leather',
+    rating: 4.9,
+    reviews: 312,
+    badge: 'Trending'
+  },
+  {
+    id: 3,
+    name: 'Executive Desk',
+    price: 899,
+    image: 'img/img 3.jpg',
+    description: 'Solid oak executive desk with storage',
+    rating: 4.7,
+    reviews: 189,
+    badge: '-20%'
+  },
+  {
+    id: 4,
+    name: 'Marble Coffee Table',
+    price: 599,
+    image: 'img/img 4.jpg',
+    description: 'Elegant marble and walnut coffee table',
+    rating: 4.6,
+    reviews: 78,
+    badge: 'New'
+  }
+];
+
 // Admin moved to separate admin.html / js/admin.js
 
 // CART MANAGEMENT
@@ -107,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeEventListeners();
   addAnimationsToElements();
   loadSampleProducts();
+  renderHomeNewPicks();
   renderAdminLists();
   ensureAdminVisibility();
 });
@@ -118,7 +167,7 @@ function initializeEventListeners() {
       const productCard = e.target.closest('.group, .product-card');
       if (productCard) {
         const productName = productCard.querySelector('h3')?.textContent || 'Product';
-        const productPrice = parseFloat(productCard.querySelector('.text-amber-700')?.textContent.replace('$', '') || 0);
+        const productPrice = parseFloat(productCard.querySelector('.text-amber-700')?.textContent.replace(/[^0-9.-]/g, '') || 0);
         
         const product = {
           id: Date.now(),
@@ -206,7 +255,51 @@ function addAnimationsToElements() {
 
 // LOAD SAMPLE PRODUCTS
 function loadSampleProducts() {
-  window.products = adminState.products.slice();
+  const storedProducts = JSON.parse(localStorage.getItem('adminProducts')) || [];
+  adminState.products = Array.isArray(storedProducts) ? storedProducts : [];
+  window.products = [...adminState.products];
+}
+
+function normalizeHomeProduct(product) {
+  return {
+    id: product.id,
+    name: product.name || 'New Arrival',
+    price: Number(product.price) || 0,
+    image: product.image || 'img/placeholder.jpg',
+    description: product.description || 'New product from admin',
+    rating: Number(product.rating) || 4.5,
+    reviews: Number(product.reviews) || 0,
+    badge: product.badge || 'New'
+  };
+}
+
+function renderHomeNewPicks() {
+  const grid = document.getElementById('homeNewPicksGrid');
+  if (!grid) return;
+
+  const storedProducts = adminState.products.map(normalizeHomeProduct);
+  const productsToShow = [...storedProducts, ...homepageFeaturedDefaults].slice(0, 4);
+
+  grid.innerHTML = productsToShow.map(product => `
+    <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-xl smooth-transition bg-white">
+      <div class="relative h-72 overflow-hidden bg-gradient-to-br from-stone-100 to-amber-50">
+        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 smooth-transition" onerror="this.src='img/placeholder.jpg'">
+        <div class="absolute top-4 right-4 bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-semibold">${product.badge}</div>
+      </div>
+      <div class="p-6">
+        <h3 class="serif text-xl font-bold text-stone-900 mb-2">${product.name}</h3>
+        <p class="text-sm text-gray-600 mb-4">${product.description}</p>
+        <div class="flex items-center justify-between">
+          <span class="text-amber-700 font-bold text-lg">₦${product.price.toLocaleString()}</span>
+          <button onclick="window.location.href='shop.html'" class="text-amber-700 text-sm font-semibold hover:text-amber-800 smooth-transition">Shop now →</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function ensureAdminVisibility() {
+  // No admin dashboard interactions on the public homepage.
 }
 
 function saveAdminData() {
@@ -241,7 +334,7 @@ function renderAdminLists() {
           <div>
             <h4 class="font-semibold">${product.name}</h4>
             <p class="text-sm text-gray-600">${product.category}</p>
-            <p class="mt-2 font-semibold text-amber-700">$${product.price}</p>
+            <p class="mt-2 font-semibold text-amber-700">₦${product.price.toLocaleString()}</p>
           </div>
           <button type="button" onclick="removeAdminProduct(${product.id})" class="text-red-600 hover:text-red-800 text-sm">Remove</button>
         </div>
@@ -359,9 +452,9 @@ function openSearchModal() {
     if (query.length > 0) {
       const filtered = window.products.filter(p => p.name.toLowerCase().includes(query));
       results.innerHTML = filtered.map(p => `
-        <div class="search-result-item" onclick="cart.addItem({id: ${p.id}, name: '${p.name}', price: ${p.price}})">
+        <div class="search-result-item" onclick="cart.addItem({id: ${p.id}, name: '${p.name}', price: ${p.price}}); document.querySelector('.modal')?.remove();">
           <strong>${p.name}</strong>
-          <span>$${p.price}</span>
+          <span>₦${p.price.toLocaleString()}</span>
         </div>
       `).join('');
     } else {
@@ -385,7 +478,7 @@ function openCartModal() {
         <div class="cart-item">
           <div class="cart-item-info">
             <strong>${item.name}</strong>
-            <span>$${item.price}</span>
+            <span>₦${item.price.toLocaleString()}</span>
           </div>
           <div class="cart-item-quantity">
             <button onclick="cart.updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
@@ -397,7 +490,7 @@ function openCartModal() {
       `).join('')}
     </div>
     <div class="cart-total">
-      <strong>Total: $${cart.getTotal().toFixed(2)}</strong>
+      <strong>Total: ₦${cart.getTotal().toFixed(2)}</strong>
     </div>
     <button class="btn btn-primary" style="width: 100%;">Proceed to Checkout →</button>
   ` : '<p style="text-align: center; padding: 2rem;">Your cart is empty</p>';

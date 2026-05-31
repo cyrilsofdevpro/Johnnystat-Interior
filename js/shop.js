@@ -158,7 +158,7 @@ function displayProducts(productsToDisplay) {
 
         <!-- Price -->
         <div class="flex justify-between items-center mb-4">
-          <span class="text-2xl font-bold text-amber-700">$${product.price.toLocaleString()}</span>
+          <span class="text-2xl font-bold text-amber-700">₦${product.price.toLocaleString()}</span>
           <span class="text-xs font-semibold text-green-600">${product.inStock ? 'In Stock' : 'Coming Soon'}</span>
         </div>
 
@@ -255,6 +255,7 @@ class Cart {
     this.save();
     this.updateCartCount();
     this.showNotification(`${product.name} added to cart!`);
+    openCartModal();
   }
 
   removeItem(productId) {
@@ -351,7 +352,7 @@ function openCartModal() {
           <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded">
           <div class="cart-item-info">
             <strong>${item.name}</strong>
-            <span class="text-amber-700 font-semibold">$${item.price.toLocaleString()}</span>
+            <span class="text-amber-700 font-semibold">₦${item.price.toLocaleString()}</span>
           </div>
           <div class="cart-item-quantity">
             <button onclick="cart.updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
@@ -365,15 +366,15 @@ function openCartModal() {
     <div class="cart-summary">
       <div class="summary-row">
         <span>Subtotal:</span>
-        <span>$${cart.getTotal().toFixed(2)}</span>
+        <span>₦${cart.getTotal().toFixed(2)}</span>
       </div>
       <div class="summary-row">
         <span>Shipping:</span>
-        <span>$50.00</span>
+        <span>₦50.00</span>
       </div>
       <div class="summary-row font-bold text-lg border-t pt-2 mt-2">
         <span>Total:</span>
-        <span class="text-amber-700">$${(cart.getTotal() + 50).toFixed(2)}</span>
+        <span class="text-amber-700">₦${(cart.getTotal() + 50).toFixed(2)}</span>
       </div>
     </div>
     <button class="w-full mt-4 py-3 bg-amber-700 text-white rounded-lg font-semibold hover:bg-amber-800 smooth-transition">
@@ -442,13 +443,13 @@ function openSearchModal() {
         p.description.toLowerCase().includes(query)
       );
       results.innerHTML = filtered.map(p => `
-        <div class="search-result-item" onclick="cart.addItem(${p.id}); modal.remove();">
+        <div class="search-result-item" onclick="cart.addItem(${p.id}); document.querySelector('.modal')?.remove();">
           <img src="${p.image}" alt="${p.name}" class="w-16 h-16 object-cover rounded">
           <div style="flex: 1;">
             <strong>${p.name}</strong>
             <p style="color: #78716b; font-size: 0.875rem;">${p.description}</p>
           </div>
-          <span class="text-amber-700 font-bold">$${p.price.toLocaleString()}</span>
+          <span class="text-amber-700 font-bold">₦${p.price.toLocaleString()}</span>
         </div>
       `).join('');
     } else {
@@ -483,16 +484,16 @@ function openProductDetail(productId) {
             </div>
             <span style="font-size: 0.875rem; color: #78716b;">${product.rating} (${product.reviews} reviews)</span>
           </div>
-          <p style="font-size: 2.25rem; color: #b45309; font-weight: bold; margin-bottom: 1rem;">$${product.price.toLocaleString()}</p>
+          <p style="font-size: 2.25rem; color: #b45309; font-weight: bold; margin-bottom: 1rem;">₦${product.price.toLocaleString()}</p>
           <p style="color: #78716b; line-height: 1.7; margin-bottom: 2rem;">${product.description}</p>
           <button 
-            onclick="cart.addItem(${product.id}); modal.remove();"
+            onclick="cart.addItem(${product.id}); document.querySelector('.modal')?.remove();"
             class="w-full py-4 bg-amber-700 text-white rounded-lg font-semibold hover:bg-amber-800 smooth-transition mb-2"
           >
             Add to Cart →
           </button>
           <button 
-            onclick="modal.remove();"
+            onclick="document.querySelector('.modal')?.remove();"
             class="w-full py-4 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 smooth-transition"
           >
             Close

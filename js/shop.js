@@ -26,7 +26,7 @@ function normalizeStoredProduct(product) {
   };
 }
 
-const storedAdminProducts = JSON.parse(localStorage.getItem('adminProducts')) || [];
+let storedAdminProducts = JSON.parse(localStorage.getItem('adminProducts')) || [];
 
 const defaultProducts = [
   {
@@ -97,10 +97,33 @@ const defaultProducts = [
   },
 ];
 
-const products = [
+let products = [
   ...defaultProducts,
   ...storedAdminProducts.map(normalizeStoredProduct)
 ];
+
+// Listen for changes to admin products/categories from other tabs and update the shop list
+window.addEventListener('storage', (e) => {
+  if (e.key === 'adminProducts' || e.key === 'adminCategories') {
+    try {
+      const newStored = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+      const adminProducts = (Array.isArray(newStored) ? newStored : []).map(normalizeStoredProduct);
+      products = [...defaultProducts, ...adminProducts];
+      filteredProducts = products.slice();
+
+      // Update current view
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        if (currentFilter && currentFilter !== 'all') {
+          displayProducts(products.filter(p => p.category === currentFilter));
+        } else {
+          displayProducts(products);
+        }
+      }
+    } catch (err) {
+      console.warn('Error updating products from storage event', err);
+    }
+  }
+});
 
 // STATE
 let filteredProducts = [...products];

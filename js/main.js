@@ -260,6 +260,26 @@ function loadSampleProducts() {
   window.products = [...adminState.products];
 }
 
+// Listen for admin updates coming from other tabs/windows (storage events)
+window.addEventListener('storage', (e) => {
+  if (e.key === 'adminProducts' || e.key === 'adminCategories') {
+    try {
+      const storedProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+      adminState.products = Array.isArray(storedProducts) ? storedProducts : [];
+      window.products = adminState.products.slice();
+
+      const storedCats = JSON.parse(localStorage.getItem('adminCategories') || '[]');
+      if (Array.isArray(storedCats)) adminState.categories = storedCats;
+
+      // Re-render UI parts that depend on admin data
+      renderHomeNewPicks();
+      renderAdminLists();
+    } catch (err) {
+      console.warn('Error handling storage event in main.js', err);
+    }
+  }
+});
+
 function normalizeHomeProduct(product) {
   return {
     id: product.id,

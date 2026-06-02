@@ -253,6 +253,36 @@
         padding-top: 2.5rem !important;
         padding-bottom: 2.5rem !important;
       }
+
+      /* Responsive Auth Modal */
+      #authModal {
+        padding: 1rem !important;
+      }
+
+      #authModal > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 90vh !important;
+        overflow-y: auto;
+      }
+
+      #authModal input,
+      #authModal button {
+        font-size: 16px !important;
+        padding: 0.75rem 1rem !important;
+      }
+
+      #authModal button[type="submit"] {
+        height: auto;
+        padding: 0.875rem 1rem !important;
+        min-height: 44px !important;
+      }
+
+      #authClose {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 1.5rem !important;
+      }
     }
   </style>
 </head>
@@ -788,26 +818,26 @@
   </script>
 
   <!-- Auth modal -->
-  <div id="authModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-    <div class="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
-      <button id="authClose" class="float-right">✕</button>
-      <h3 class="serif text-xl font-semibold mb-3">Account</h3>
+  <div id="authModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div class="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative">
+      <button id="authClose" class="absolute top-4 right-4 text-2xl text-gray-600 hover:text-gray-900 w-8 h-8 flex items-center justify-center">✕</button>
+      <h3 class="serif text-xl md:text-2xl font-semibold mb-6 pr-8">Account</h3>
       <div id="loginForm">
-        <form class="space-y-3">
-          <input id="liEmail" type="email" placeholder="Email" class="w-full border rounded px-3 py-2" required>
-          <input id="liPassword" type="password" placeholder="Password" class="w-full border rounded px-3 py-2" required>
-          <button type="submit" class="w-full bg-amber-700 text-white py-2 rounded">Sign in</button>
+        <form class="space-y-4">
+          <input id="liEmail" type="email" placeholder="Email" class="w-full border border-gray-300 rounded px-4 py-3 text-base" required>
+          <input id="liPassword" type="password" placeholder="Password" class="w-full border border-gray-300 rounded px-4 py-3 text-base" required>
+          <button type="submit" class="w-full bg-amber-700 hover:bg-amber-800 text-white py-3 rounded font-semibold text-base transition">Sign in</button>
         </form>
-        <p class="text-sm mt-3">Don't have an account? <a id="switchToSignup" class="text-amber-700 cursor-pointer">Create one</a></p>
+        <p class="text-sm mt-4">Don't have an account? <a id="switchToSignup" class="text-amber-700 hover:text-amber-800 cursor-pointer font-semibold">Create one</a></p>
       </div>
       <div id="signupForm" class="hidden">
-        <form class="space-y-3">
-          <input id="suName" type="text" placeholder="Full name" class="w-full border rounded px-3 py-2">
-          <input id="suEmail" type="email" placeholder="Email" class="w-full border rounded px-3 py-2" required>
-          <input id="suPassword" type="password" placeholder="Password" class="w-full border rounded px-3 py-2" required>
-          <button type="submit" class="w-full bg-amber-700 text-white py-2 rounded">Create account</button>
+        <form class="space-y-4">
+          <input id="suName" type="text" placeholder="Full name" class="w-full border border-gray-300 rounded px-4 py-3 text-base">
+          <input id="suEmail" type="email" placeholder="Email" class="w-full border border-gray-300 rounded px-4 py-3 text-base" required>
+          <input id="suPassword" type="password" placeholder="Password" class="w-full border border-gray-300 rounded px-4 py-3 text-base" required>
+          <button type="submit" class="w-full bg-amber-700 hover:bg-amber-800 text-white py-3 rounded font-semibold text-base transition">Create account</button>
         </form>
-        <p class="text-sm mt-3">Already have an account? <a id="switchToLogin" class="text-amber-700 cursor-pointer">Sign in</a></p>
+        <p class="text-sm mt-4">Already have an account? <a id="switchToLogin" class="text-amber-700 hover:text-amber-800 cursor-pointer font-semibold">Sign in</a></p>
       </div>
     </div>
   </div>

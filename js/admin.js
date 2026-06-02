@@ -30,8 +30,17 @@ function readAdminState(){
 }
 
 function saveAdminState(){
-  localStorage.setItem('adminCategories', JSON.stringify(adminState.categories));
-  localStorage.setItem('adminProducts', JSON.stringify(adminState.products));
+  try {
+    localStorage.setItem('adminCategories', JSON.stringify(adminState.categories));
+    localStorage.setItem('adminProducts', JSON.stringify(adminState.products));
+  } catch (err) {
+    if (err.name === 'QuotaExceededError') {
+      showToast('Storage full. Please delete old products and try again.', 'error');
+    } else {
+      showToast('Error saving data: ' + err.message, 'error');
+    }
+    throw err;
+  }
 }
 
 function $(sel){return document.querySelector(sel)}
@@ -192,8 +201,8 @@ function fileToDataUrl(file){
       const img = new Image();
       img.onload = ()=>{
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
+        const MAX_WIDTH = 500;
+        const MAX_HEIGHT = 500;
         let width = img.width;
         let height = img.height;
 
@@ -212,7 +221,7 @@ function fileToDataUrl(file){
         canvas.width = width;
         canvas.height = height;
         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-        res(canvas.toDataURL('image/jpeg', 0.75));
+        res(canvas.toDataURL('image/jpeg', 0.5));
       };
       img.onerror = rej;
       img.src = reader.result;

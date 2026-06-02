@@ -500,7 +500,7 @@ function openProductDetail(productId) {
 
   const images = Array.isArray(product.images) && product.images.length ? product.images : [product.image];
   const gallery = images.length > 1 ? images.map((img, idx) => `
-      <button type="button" class="product-thumb ${idx===0 ? 'active' : ''}" data-src="${img}" onclick="switchProductDetailImage(this)">
+      <button type="button" class="product-thumb ${idx===0 ? 'active' : ''}" data-index="${idx}" data-src="${img}" onclick="switchProductDetailImage(this)">
         <img src="${img}" alt="${product.name} ${idx+1}" class="h-20 w-20 object-cover rounded-lg">
       </button>
     `).join('') : '';
@@ -508,11 +508,14 @@ function openProductDetail(productId) {
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.innerHTML = `
-    <div class="modal-content product-detail">
+    <div class="modal-content product-detail" data-image-count="${images.length}">
       <button class="modal-close">✕</button>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
-        <div>
+        <div class="product-detail-image-wrap">
           <img src="${images[0]}" alt="${product.name}" class="w-full rounded-2xl object-cover product-detail-main-image" style="aspect-ratio: 1;">
+          <button class="detail-arrow detail-arrow-left" type="button">‹</button>
+          <button class="detail-arrow detail-arrow-right" type="button">›</button>
+          <p class="product-detail-caption">Image 1 of ${images.length}</p>
           ${gallery ? `<div class="mt-4 grid grid-cols-4 gap-2">${gallery}</div>` : ''}
         </div>
         <div>
@@ -552,7 +555,6 @@ function openProductDetail(productId) {
     if (e.target === modal) modal.remove();
   });
 
-  // Add swipe gesture detection
   const mainImage = modal.querySelector('.product-detail-main-image');
   let touchStartX = 0;
   let touchEndX = 0;
@@ -565,6 +567,11 @@ function openProductDetail(productId) {
     touchEndX = e.changedTouches[0].screenX;
     handleSwipe(touchStartX, touchEndX, modal);
   }, false);
+
+  const leftArrow = modal.querySelector('.detail-arrow-left');
+  const rightArrow = modal.querySelector('.detail-arrow-right');
+  if (leftArrow) leftArrow.addEventListener('click', () => changeProductDetailImage('prev', modal));
+  if (rightArrow) rightArrow.addEventListener('click', () => changeProductDetailImage('next', modal));
 }
 
 function handleSwipe(startX, endX, modal) {
@@ -572,24 +579,23 @@ function handleSwipe(startX, endX, modal) {
   const diff = startX - endX;
 
   if (Math.abs(diff) < swipeThreshold) return;
-
   const direction = diff > 0 ? 'next' : 'prev';
-  const arrows = modal.querySelectorAll('.detail-arrow');
-  let arrowBtn = null;
+  changeProductDetailImage(direction, modal);
+}
 
-  for (let arrow of arrows) {
-    if (direction === 'next' && arrow.classList.contains('detail-arrow-right')) {
-      arrowBtn = arrow;
-      break;
-    } else if (direction === 'prev' && arrow.classList.contains('detail-arrow-left')) {
-      arrowBtn = arrow;
-      break;
-    }
-  }
+function changeProductDetailImage(direction, modal) {
+  const thumbnails = Array.from(modal.querySelectorAll('.product-thumb'));
+  if (!thumbnails.length) return;
 
-  if (arrowBtn) {
-    changeProductDetailImage(direction, arrowBtn);
-  }
+  const activeIndex = thumbnails.findIndex(btn => btn.classList.contains('active'));
+  const currentIndex = activeIndex >= 0 ? activeIndex : 0;
+  const nextIndex = direction === 'next'
+    ? (currentIndex + 1) % thumbnails.length
+    : (currentIndex - 1 + thumbnails.length) % thumbnails.length;
+
+  const nextButton = thumbnails[nextIndex];
+  if (!nextButton) return;
+  switchProductDetailImage(nextButton);
 }
 
 window.handleSwipe = handleSwipe;
@@ -601,6 +607,12 @@ function switchProductDetailImage(button) {
   modal.querySelector('.product-detail-main-image').src = src;
   modal.querySelectorAll('.product-thumb').forEach(btn => btn.classList.remove('active'));
   button.classList.add('active');
+
+  const caption = modal.querySelector('.product-detail-caption');
+  const index = Number(button.dataset.index || 0);
+  if (caption) {
+    caption.textContent = `Image ${index + 1} of ${modal.querySelectorAll('.product-thumb').length}`;
+  }
 }
 
 window.switchProductDetailImage = switchProductDetailImage;

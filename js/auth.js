@@ -62,15 +62,38 @@ function showToastFallback(message, type){
 function updateNavAuth(){
   const u = getCurrentUser();
   const container = document.getElementById('authContainer');
-  if (!container) return;
+  const mobileContainer = document.getElementById('mobileAuthContainer');
+  
+  if (!container && !mobileContainer) return;
+  
   if (u) {
-    container.innerHTML = `<span class="mr-3 text-sm">Hi, ${u.name}</span><button id="signoutBtn" class="px-3 py-1 bg-white border border-amber-700 text-amber-700 rounded">Logout</button>`;
-    const btn = document.getElementById('signoutBtn');
-    if (btn) btn.addEventListener('click', ()=>{ logoutUser(); showToastFallback('Signed out','info'); });
+    // Desktop version
+    if (container) {
+      container.innerHTML = `<span class="mr-3 text-sm">Hi, ${u.name}</span><button id="signoutBtn" class="px-3 py-1 bg-white border border-amber-700 text-amber-700 rounded">Logout</button>`;
+      const btn = document.getElementById('signoutBtn');
+      if (btn) btn.addEventListener('click', ()=>{ logoutUser(); showToastFallback('Signed out','info'); });
+    }
+    
+    // Mobile version
+    if (mobileContainer) {
+      mobileContainer.innerHTML = `<div style="font-size: 0.875rem; color: #78716b; margin-bottom: 0.5rem;">Hi, ${u.name}</div><button id="signoutBtnMobile" class="bg-red-600 text-white rounded" style="width: 100%; padding: 0.75rem 1rem; font-weight: 500;">Logout</button>`;
+      const btn = document.getElementById('signoutBtnMobile');
+      if (btn) btn.addEventListener('click', ()=>{ logoutUser(); showToastFallback('Signed out','info'); });
+    }
   } else {
-    container.innerHTML = `<button id="openAuthBtn" class="px-3 py-1 bg-amber-700 text-white rounded">Sign in</button>`;
-    const btn = document.getElementById('openAuthBtn');
-    if (btn) btn.addEventListener('click', openAuthModal);
+    // Desktop version
+    if (container) {
+      container.innerHTML = `<button id="openAuthBtn" class="px-3 py-1 bg-amber-700 text-white rounded">Sign in</button>`;
+      const btn = document.getElementById('openAuthBtn');
+      if (btn) btn.addEventListener('click', openAuthModal);
+    }
+    
+    // Mobile version
+    if (mobileContainer) {
+      mobileContainer.innerHTML = `<button id="openAuthBtnMobile" class="bg-amber-700 text-white rounded" style="width: 100%; padding: 0.75rem 1rem; font-weight: 500;">Sign in</button>`;
+      const btn = document.getElementById('openAuthBtnMobile');
+      if (btn) btn.addEventListener('click', ()=>{ openAuthModal(); document.getElementById('mobile-menu').classList.remove('active'); });
+    }
   }
 }
 

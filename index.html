@@ -80,6 +80,19 @@
       border-bottom: 1px solid #f3f4f6;
     }
 
+    #mobile-menu li#mobileAuthContainer {
+      padding: 1rem 1.5rem !important;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    #mobileAuthContainer button {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+    }
+
     body.dark-mode #mobile-menu {
       background: #2d2d2d;
     }
@@ -315,17 +328,18 @@
       <li class="hover:text-amber-700 smooth-transition cursor-pointer">
         <a href="#categories" class="hover:text-amber-700">Categories</a>
       </li>
+      <li id="mobileAuthContainer" class="!p-0 !border-0 mt-2"></li>
     </ul>
 
     <div class="flex gap-3 md:gap-6 text-lg md:text-lg cursor-pointer items-center">
-      <div id="authContainer"></div>
+      <div id="authContainer" class="hidden md:block"></div>
       <span onclick="openSearchModal()" class="hover:scale-110 smooth-transition text-base md:text-lg">🔍</span>
       <span onclick="openCartModal()" class="hover:scale-110 smooth-transition relative text-base md:text-lg">
         🛒
         <span class="cart-badge absolute -top-2 -right-2 bg-amber-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center" style="display: none;">0</span>
       </span>
       <span class="hover:scale-110 smooth-transition text-base md:text-lg" onclick="toggleTheme()" id="theme-toggle" title="Toggle dark mode">☀️</span>
-      <span class="hover:scale-110 smooth-transition text-base md:text-lg cursor-pointer" onclick="window.location.href='admin.html'" title="Admin login">👤</span>
+      <span class="hover:scale-110 smooth-transition text-base md:text-lg cursor-pointer hidden md:inline" onclick="window.location.href='admin.html'" title="Admin login">👤</span>
       <button id="hamburger-btn" onclick="toggleMobileMenu()" class="md:hidden">
         <span></span>
         <span></span>

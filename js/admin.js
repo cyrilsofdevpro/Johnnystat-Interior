@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('adminAuth','true');
       loginCard.classList.add('hidden');
       dashboard.classList.remove('hidden');
+      initDashboardHandlers();
       mountDashboard();
     } else {
       showToast('Invalid credentials', 'error');

@@ -551,7 +551,48 @@ function openProductDetail(productId) {
   modal.addEventListener('click', (e) => {
     if (e.target === modal) modal.remove();
   });
+
+  // Add swipe gesture detection
+  const mainImage = modal.querySelector('.product-detail-main-image');
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  mainImage.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, false);
+
+  mainImage.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe(touchStartX, touchEndX, modal);
+  }, false);
 }
+
+function handleSwipe(startX, endX, modal) {
+  const swipeThreshold = 50;
+  const diff = startX - endX;
+
+  if (Math.abs(diff) < swipeThreshold) return;
+
+  const direction = diff > 0 ? 'next' : 'prev';
+  const arrows = modal.querySelectorAll('.detail-arrow');
+  let arrowBtn = null;
+
+  for (let arrow of arrows) {
+    if (direction === 'next' && arrow.classList.contains('detail-arrow-right')) {
+      arrowBtn = arrow;
+      break;
+    } else if (direction === 'prev' && arrow.classList.contains('detail-arrow-left')) {
+      arrowBtn = arrow;
+      break;
+    }
+  }
+
+  if (arrowBtn) {
+    changeProductDetailImage(direction, arrowBtn);
+  }
+}
+
+window.handleSwipe = handleSwipe;
 
 function switchProductDetailImage(button) {
   const src = button.dataset.src;
@@ -641,6 +682,17 @@ styles.textContent = `
 
   .product-detail-image-wrap {
     position: relative;
+  }
+
+  .product-detail-main-image {
+    touch-action: pan-y;
+    user-select: none;
+    cursor: grab;
+    transition: opacity 0.2s ease;
+  }
+
+  .product-detail-main-image:active {
+    cursor: grabbing;
   }
 
   .product-detail-caption {

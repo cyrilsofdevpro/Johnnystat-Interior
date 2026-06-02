@@ -13,11 +13,16 @@ function normalizeCategory(category) {
 }
 
 function normalizeStoredProduct(product) {
+  const images = Array.isArray(product.images)
+    ? product.images
+    : (product.image ? [product.image] : ['img/placeholder.jpg']);
+
   return {
     id: product.id,
     name: product.name || 'New Product',
     price: Number(product.price) || 0,
-    image: product.image || 'img/placeholder.jpg',
+    image: images[0] || 'img/placeholder.jpg',
+    images,
     category: normalizeCategory(product.category || ''),
     rating: Number(product.rating) || 4.5,
     reviews: Number(product.reviews) || 0,
@@ -150,60 +155,63 @@ function displayProducts(productsToDisplay) {
 
   noResults.classList.add('hidden');
   
-  grid.innerHTML = productsToDisplay.map(product => `
-    <div class="product-card group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl smooth-transition">
-      <!-- Product Image -->
-      <div class="relative h-80 overflow-hidden bg-gradient-to-br from-stone-100 to-amber-50">
-        <img 
-          src="${product.image}" 
-          alt="${product.name}" 
-          class="w-full h-full object-cover group-hover:scale-105 smooth-transition"
-          onerror="this.src='img/placeholder.jpg'"
-        >
-        <div class="absolute top-4 right-4 flex flex-col gap-2">
-          ${product.rating >= 4.8 ? '<span class="bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Best Seller</span>' : ''}
-          ${!product.inStock ? '<span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">Out of Stock</span>' : ''}
-        </div>
-      </div>
-
-      <!-- Product Info -->
-      <div class="p-6">
-        <h3 class="serif text-xl font-bold text-stone-900 mb-2">${product.name}</h3>
-        <p class="text-sm text-gray-600 mb-4">${product.description}</p>
-        
-        <!-- Rating -->
-        <div class="flex items-center gap-2 mb-4">
-          <div class="flex gap-1">
-            ${'⭐'.repeat(Math.floor(product.rating))}
+  grid.innerHTML = productsToDisplay.map(product => {
+    const imageSrc = Array.isArray(product.images) && product.images.length ? product.images[0] : product.image;
+    return `
+      <div class="product-card group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl smooth-transition">
+        <!-- Product Image -->
+        <div class="relative h-80 overflow-hidden bg-gradient-to-br from-stone-100 to-amber-50">
+          <img 
+            src="${imageSrc}"
+            alt="${product.name}" 
+            class="w-full h-full object-cover group-hover:scale-105 smooth-transition"
+            onerror="this.src='img/placeholder.jpg'"
+          >
+          <div class="absolute top-4 right-4 flex flex-col gap-2">
+            ${product.rating >= 4.8 ? '<span class="bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Best Seller</span>' : ''}
+            ${!product.inStock ? '<span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">Out of Stock</span>' : ''}
           </div>
-          <span class="text-xs text-gray-600">${product.rating} (${product.reviews} reviews)</span>
         </div>
 
-        <!-- Price -->
-        <div class="flex justify-between items-center mb-4">
-          <span class="text-2xl font-bold text-amber-700">₦${product.price.toLocaleString()}</span>
-          <span class="text-xs font-semibold text-green-600">${product.inStock ? 'In Stock' : 'Coming Soon'}</span>
+        <!-- Product Info -->
+        <div class="p-6">
+          <h3 class="serif text-xl font-bold text-stone-900 mb-2">${product.name}</h3>
+          <p class="text-sm text-gray-600 mb-4">${product.description}</p>
+          
+          <!-- Rating -->
+          <div class="flex items-center gap-2 mb-4">
+            <div class="flex gap-1">
+              ${'⭐'.repeat(Math.floor(product.rating))}
+            </div>
+            <span class="text-xs text-gray-600">${product.rating} (${product.reviews} reviews)</span>
+          </div>
+
+          <!-- Price -->
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-2xl font-bold text-amber-700">₦${product.price.toLocaleString()}</span>
+            <span class="text-xs font-semibold text-green-600">${product.inStock ? 'In Stock' : 'Coming Soon'}</span>
+          </div>
+
+          <!-- Add to Cart Button -->
+          <button 
+            onclick="addProductToCart(${product.id})"
+            ${product.inStock ? '' : 'disabled'}
+            class="w-full py-3 bg-amber-700 text-white rounded-lg font-semibold hover:bg-amber-800 smooth-transition ${!product.inStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}"
+          >
+            ${product.inStock ? 'Add to Cart →' : 'Coming Soon'}
+          </button>
+
+          <!-- Quick View -->
+          <button 
+            onclick="openProductDetail(${product.id})"
+            class="w-full mt-2 py-2 border-2 border-amber-700 text-amber-700 rounded-lg font-medium hover:bg-amber-50 smooth-transition"
+          >
+            Quick View
+          </button>
         </div>
-
-        <!-- Add to Cart Button -->
-        <button 
-          onclick="addProductToCart(${product.id})"
-          ${product.inStock ? '' : 'disabled'}
-          class="w-full py-3 bg-amber-700 text-white rounded-lg font-semibold hover:bg-amber-800 smooth-transition ${!product.inStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}"
-        >
-          ${product.inStock ? 'Add to Cart →' : 'Coming Soon'}
-        </button>
-
-        <!-- Quick View -->
-        <button 
-          onclick="openProductDetail(${product.id})"
-          class="w-full mt-2 py-2 border-2 border-amber-700 text-amber-700 rounded-lg font-medium hover:bg-amber-50 smooth-transition"
-        >
-          Quick View
-        </button>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 // FILTER PRODUCTS
@@ -490,6 +498,13 @@ function openProductDetail(productId) {
   const product = products.find(p => p.id === productId);
   if (!product) return;
 
+  const images = Array.isArray(product.images) && product.images.length ? product.images : [product.image];
+  const gallery = images.length > 1 ? images.map((img, idx) => `
+      <button type="button" class="product-thumb ${idx===0 ? 'active' : ''}" data-src="${img}" onclick="switchProductDetailImage(this)">
+        <img src="${img}" alt="${product.name} ${idx+1}" class="h-20 w-20 object-cover rounded-lg">
+      </button>
+    `).join('') : '';
+
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.innerHTML = `
@@ -497,7 +512,8 @@ function openProductDetail(productId) {
       <button class="modal-close">✕</button>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
         <div>
-          <img src="${product.image}" alt="${product.name}" class="w-full rounded-2xl object-cover" style="aspect-ratio: 1;">
+          <img src="${images[0]}" alt="${product.name}" class="w-full rounded-2xl object-cover product-detail-main-image" style="aspect-ratio: 1;">
+          ${gallery ? `<div class="mt-4 grid grid-cols-4 gap-2">${gallery}</div>` : ''}
         </div>
         <div>
           <h2 class="serif text-3xl font-bold mb-2">${product.name}</h2>
@@ -536,6 +552,17 @@ function openProductDetail(productId) {
     if (e.target === modal) modal.remove();
   });
 }
+
+function switchProductDetailImage(button) {
+  const src = button.dataset.src;
+  const modal = button.closest('.modal');
+  if (!modal) return;
+  modal.querySelector('.product-detail-main-image').src = src;
+  modal.querySelectorAll('.product-thumb').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+}
+
+window.switchProductDetailImage = switchProductDetailImage;
 
 // EVENT LISTENERS
 function setupEventListeners() {
@@ -610,6 +637,75 @@ styles.textContent = `
 
   .modal-close:hover {
     color: #292524;
+  }
+
+  .product-detail-image-wrap {
+    position: relative;
+  }
+
+  .product-detail-caption {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.95);
+    color: #292524;
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    z-index: 5;
+  }
+
+  .detail-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    color: #292524;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    transition: transform 0.2s, background 0.2s;
+    z-index: 5;
+  }
+
+  .detail-arrow:hover {
+    transform: translateY(-50%) scale(1.05);
+    background: #ffffff;
+  }
+
+  .detail-arrow-left {
+    left: 0.75rem;
+  }
+
+  .detail-arrow-right {
+    right: 0.75rem;
+  }
+
+  .product-thumb {
+    border: 2px solid transparent;
+    padding: 0.2rem;
+    border-radius: 1rem;
+    background: #f8f5f1;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .product-thumb.active {
+    border-color: #f59e0b;
+    transform: scale(1.02);
+  }
+
+  .product-thumb:hover {
+    border-color: #f59e0b;
   }
 
   .search-input {

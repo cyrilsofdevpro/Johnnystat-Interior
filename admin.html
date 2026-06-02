@@ -49,8 +49,9 @@
             <select id="pCategory" class="w-full border rounded px-4 py-2 text-stone-900"></select>
             <input id="pDesc" type="text" placeholder="Short description / caption" class="w-full border rounded px-4 py-2 text-stone-900">
             <div>
-              <label class="block text-sm mb-2">Product image</label>
-              <input id="pImage" type="file" accept="image/*">
+              <label class="block text-sm mb-2">Product images</label>
+              <input id="pImages" type="file" accept="image/*" multiple>
+              <p class="text-xs text-gray-500 mt-1">Select one or more images for this product.</p>
             </div>
             <div class="flex gap-3">
               <button type="submit" class="bg-amber-700 text-white px-4 py-2 rounded">Upload Product</button>
@@ -85,9 +86,9 @@
         <select id="eCategory" class="w-full border rounded px-3 py-2 text-stone-900"></select>
         <input id="eDesc" type="text" placeholder="Caption / description" class="w-full border rounded px-3 py-2 text-stone-900">
         <div>
-          <label class="block text-sm mb-1">Replace image (optional)</label>
-          <input id="eImage" type="file" accept="image/*">
-          <div id="ePreview" class="mt-3"></div>
+          <label class="block text-sm mb-1">Replace images (optional)</label>
+          <input id="eImages" type="file" accept="image/*" multiple>
+          <div id="ePreview" class="mt-3 grid grid-cols-3 gap-2"></div>
         </div>
         <div class="flex justify-end gap-2 mt-4">
           <button type="button" id="cancelEdit" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>

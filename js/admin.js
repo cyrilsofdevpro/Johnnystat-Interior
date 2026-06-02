@@ -12,7 +12,18 @@ function readAdminState(){
     const cats = JSON.parse(localStorage.getItem('adminCategories'));
     const prods = JSON.parse(localStorage.getItem('adminProducts'));
     if (Array.isArray(cats)) adminState.categories = cats;
-    if (Array.isArray(prods)) adminState.products = prods;
+    if (Array.isArray(prods)) {
+      adminState.products = prods.map(p => {
+        const images = Array.isArray(p.images)
+          ? p.images
+          : (p.image ? [p.image] : ['img/placeholder.jpg']);
+        return {
+          ...p,
+          images,
+          image: Array.isArray(images) && images.length ? images[0] : 'img/placeholder.jpg'
+        };
+      });
+    }
   } catch (err) {
     console.warn('Could not parse admin state from localStorage', err);
   }
@@ -49,11 +60,11 @@ function initDashboardHandlers(){
     const price = Number($('#pPrice').value);
     const category = $('#pCategory').value;
     const desc = $('#pDesc').value.trim();
-    const file = $('#pImage').files[0];
-    let image = '';
-    if (file) {
-      image = await fileToDataUrl(file);
-    }
+    const files = Array.from($('#pImages').files || []);
+
+    const images = files.length
+      ? await Promise.all(files.map(fileToDataUrl))
+      : ['img/placeholder.jpg'];
 
     if (!name) { showToast('Name is required','error'); return; }
     if (!price || price <= 0) { showToast('Enter a valid price','error'); return; }
@@ -64,7 +75,8 @@ function initDashboardHandlers(){
       price,
       category,
       description: desc,
-      image: image || 'img/placeholder.jpg',
+      images,
+      image: images[0],
       inStock: true
     };
 
@@ -203,19 +215,22 @@ function removeCategory(name){
 function renderProducts(){
   const grid = $('#productsGrid');
   if (!grid) return;
-  grid.innerHTML = adminState.products.length ? adminState.products.map(p=>`
-    <div class="border rounded p-3 bg-white">
-      <img src="${p.image}" alt="${p.name}" class="h-40 w-full object-cover mb-2 rounded">
-      <h4 class="font-semibold">${p.name}</h4>
-      <p class="text-sm text-gray-600">${p.category}</p>
-      <p class="mt-2 text-amber-700 font-bold">₦${p.price.toLocaleString()}</p>
-      <p class="text-sm mt-2">${p.description||''}</p>
-      <div class="flex gap-2 mt-3">
-        <button class="px-3 py-1 bg-amber-700 text-white rounded" onclick="showEditModal(${p.id})">Edit</button>
-        <button class="px-3 py-1 bg-gray-200 rounded" onclick="deleteProduct(${p.id})">Delete</button>
+  grid.innerHTML = adminState.products.length ? adminState.products.map(p=>{
+    const imageSrc = Array.isArray(p.images) && p.images.length ? p.images[0] : (p.image || 'img/placeholder.jpg');
+    return `
+      <div class="border rounded p-3 bg-white">
+        <img src="${imageSrc}" alt="${p.name}" class="h-40 w-full object-cover mb-2 rounded">
+        <h4 class="font-semibold">${p.name}</h4>
+        <p class="text-sm text-gray-600">${p.category}</p>
+        <p class="mt-2 text-amber-700 font-bold">₦${p.price.toLocaleString()}</p>
+        <p class="text-sm mt-2">${p.description||''}</p>
+        <div class="flex gap-2 mt-3">
+          <button class="px-3 py-1 bg-amber-700 text-white rounded" onclick="showEditModal(${p.id})">Edit</button>
+          <button class="px-3 py-1 bg-gray-200 rounded" onclick="deleteProduct(${p.id})">Delete</button>
+        </div>
       </div>
-    </div>
-  `).join('') : '<p class="text-gray-500">No products yet.</p>';
+    `;
+  }).join('') : '<p class="text-gray-500">No products yet.</p>';
 }
 
 // toast helper
@@ -230,14 +245,18 @@ function showToast(message, type='info'){
   setTimeout(()=>{ el.remove(); }, 3000);
 }
 
-// preview for edit image
+// preview for edit images
 document.addEventListener('change', (e)=>{
-  if (e.target && e.target.id === 'eImage'){
-    const file = e.target.files[0];
-    if (!file) return;
-    fileToDataUrl(file).then(url => {
-      const preview = document.getElementById('ePreview');
-      if (preview) preview.innerHTML = `<img src="${url}" class="h-40 object-cover rounded">`;
+  if (e.target && e.target.id === 'eImages'){
+    const files = Array.from(e.target.files || []);
+    const preview = document.getElementById('ePreview');
+    if (!preview) return;
+    if (!files.length) {
+      preview.innerHTML = '';
+      return;
+    }
+    Promise.all(files.map(fileToDataUrl)).then(urls => {
+      preview.innerHTML = urls.map(url => `<img src="${url}" class="h-24 w-24 object-cover rounded">`).join('');
     });
   }
 });
@@ -259,9 +278,10 @@ function showEditModal(id){
   $('#eCategory').innerHTML = adminState.categories.map(c=>`<option value="${c}">${c}</option>`).join('');
   $('#eCategory').value = p.category;
   $('#eDesc').value = p.description || '';
-  $('#ePreview').innerHTML = `<img src="${p.image}" class="h-40 object-cover rounded">`;
 
-  // attach submit handler
+  const existingImages = Array.isArray(p.images) ? p.images : (p.image ? [p.image] : ['img/placeholder.jpg']);
+  $('#ePreview').innerHTML = existingImages.map(img => `<img src="${img}" class="h-24 w-24 object-cover rounded">`).join('');
+
   const editForm = $('#editForm');
   const onSave = async (e)=>{
     e.preventDefault();
@@ -269,9 +289,12 @@ function showEditModal(id){
     const price = Number($('#ePrice').value);
     const category = $('#eCategory').value;
     const desc = $('#eDesc').value.trim();
-    const file = $('#eImage').files[0];
-    let image = p.image;
-    if (file) image = await fileToDataUrl(file);
+    const files = Array.from($('#eImages').files || []);
+
+    let images = existingImages;
+    if (files.length) {
+      images = await Promise.all(files.map(fileToDataUrl));
+    }
 
     if (!name) { showToast('Name required','error'); return; }
     if (!price || price <= 0) { showToast('Invalid price','error'); return; }
@@ -280,7 +303,8 @@ function showEditModal(id){
     p.price = price;
     p.category = category;
     p.description = desc;
-    p.image = image;
+    p.images = images;
+    p.image = images.length ? images[0] : 'img/placeholder.jpg';
     saveAdminState();
     renderProducts();
     showToast('Product updated','success');

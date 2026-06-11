@@ -14,7 +14,7 @@ function getSupabaseClient() {
 async function uploadFileToSupabase(file) {
   const client = getSupabaseClient();
   const filename = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
-  const path = `interiors/${filename}`;
+  const path = filename;
   const { data, error } = await client.storage.from(SUPABASE_BUCKET).upload(path, file, { cacheControl: '3600', upsert: false });
   if (error) throw error;
 

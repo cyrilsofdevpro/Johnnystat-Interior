@@ -1,6 +1,5 @@
 // Admin Supabase auth + interiors upload/list UI glue
 // `ADMIN_EMAIL` is read from `js/supabase-config.js` (set during setup).
-const ADMIN_EMAIL = typeof ADMIN_EMAIL !== 'undefined' ? ADMIN_EMAIL : 'admin@yourapp.com';
 
 function showAdminDashboard() {
   document.getElementById('loginCard')?.classList.add('hidden');

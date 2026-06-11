@@ -124,7 +124,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         if (user && user.email === ADMIN_EMAIL) {
           showAdminDashboard();
           // initialize admin UI
-          await loadAdminInteriors();
           initDashboardHandlers();
           mountDashboard();
         } else {
@@ -146,28 +145,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }
 
-  // interior upload form
-  const interiorForm = document.getElementById('interiorForm');
-  if (interiorForm) {
-    interiorForm.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const title = document.getElementById('iTitle').value.trim();
-      const fileInput = document.getElementById('iImage');
-      const file = fileInput.files[0];
-      if (!title || !file) { showToast('Title and image required','error'); return; }
-      try {
-        const { publicUrl } = await uploadInteriorFile(file);
-        await insertInteriorRecord(title, publicUrl);
-        showToast('Uploaded','success');
-        interiorForm.reset();
-        await loadAdminInteriors();
-      } catch (err) {
-        console.error(err);
-        showToast('Upload failed','error');
-      }
-    });
-  }
-
   // check existing session
   (async ()=>{
     if (!window.supabaseClient) return;
@@ -178,7 +155,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         showAdminDashboard();
         initDashboardHandlers();
         mountDashboard();
-        await loadAdminInteriors();
       } else {
         showLoginCard();
       }

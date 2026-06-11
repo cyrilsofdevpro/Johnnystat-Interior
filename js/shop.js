@@ -102,41 +102,28 @@ const defaultProducts = [
 
 let products = [...defaultProducts];
 
-async function fetchServerAdminProducts() {
-  const response = await fetch('/api/products');
-  if (!response.ok) throw new Error('Failed to load server products');
-  return response.json();
-}
-
 async function loadProducts() {
+  products = [...defaultProducts];
+  // also fetch interiors from Supabase and include as products (display-only)
   try {
-    const adminProducts = await fetchServerAdminProducts();
-    products = [...defaultProducts, ...adminProducts.map(normalizeStoredProduct)];
-    // also fetch interiors from Supabase and include as products (display-only)
-    try {
-      const interiors = typeof fetchInteriorsPublic === 'function' ? await fetchInteriorsPublic() : [];
-      if (Array.isArray(interiors) && interiors.length) {
-        const mapped = interiors.map(i => ({
-          id: `i-${i.id}`,
-          name: i.title || 'Interior',
-          price: 0,
-          image: i.image_url,
-          images: [i.image_url],
-          category: 'interior',
-          rating: 5,
-          reviews: 0,
-          description: i.title || '',
-          inStock: true
-        }));
-        products = [...products, ...mapped];
-      }
-    } catch (e) {
-      console.warn('Failed to fetch public interiors', e);
+    const interiors = typeof fetchInteriorsPublic === 'function' ? await fetchInteriorsPublic() : [];
+    if (Array.isArray(interiors) && interiors.length) {
+      const mapped = interiors.map(i => ({
+        id: `i-${i.id}`,
+        name: i.title || 'Interior',
+        price: 0,
+        image: i.image_url,
+        images: [i.image_url],
+        category: 'interior',
+        rating: 5,
+        reviews: 0,
+        description: i.title || '',
+        inStock: true
+      }));
+      products = [...products, ...mapped];
     }
-  } catch (err) {
-    console.warn('Error loading remote admin products', err);
-    const fallback = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-    products = [...defaultProducts, ...(Array.isArray(fallback) ? fallback.map(normalizeStoredProduct) : [])];
+  } catch (e) {
+    console.warn('Failed to fetch public interiors', e);
   }
 
   if (currentFilter && currentFilter !== 'all') {

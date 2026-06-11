@@ -1,6 +1,4 @@
 // Admin dashboard script
-const API_BASE = '/api';
-
 const adminState = {
   categories: ['Living Room','Office','Bedroom'],
   products: []
@@ -35,16 +33,22 @@ function normalizeServerProduct(product){
 
   return {
     ...product,
-    id: Number(product.id) || Date.now(),
+    id: product.id || Date.now(),
     images,
     image: Array.isArray(images) && images.length ? images[0] : (product.image || 'img/placeholder.jpg')
   };
 }
 
-async function fetchServerProducts(){
-  const response = await fetch(`${API_BASE}/products`);
-  if (!response.ok) throw new Error('Failed to load products from server');
-  return response.json();
+async function saveProductToSupabase(product) {
+  const client = getSupabaseClient();
+  const { data, error } = await client.from('interiors').insert([
+    {
+      title: product.name,
+      image_url: product.image
+    }
+  ]);
+  if (error) throw error;
+  return data && data[0];
 }
 
 async function readAdminState(){
@@ -56,20 +60,12 @@ async function readAdminState(){
   }
 
   try {
-    const prods = await fetchServerProducts();
+    const prods = JSON.parse(localStorage.getItem('adminProducts'));
     if (Array.isArray(prods)) {
       adminState.products = prods.map(normalizeServerProduct);
     }
   } catch (err) {
-    console.warn('Could not load admin products from server', err);
-    try {
-      const prods = JSON.parse(localStorage.getItem('adminProducts'));
-      if (Array.isArray(prods)) {
-        adminState.products = prods.map(normalizeServerProduct);
-      }
-    } catch (fallbackErr) {
-      console.warn('Could not parse fallback admin products from localStorage', fallbackErr);
-    }
+    console.warn('Could not load admin products from localStorage', err);
   }
 }
 
@@ -84,36 +80,6 @@ function saveAdminState(){
       showToast('Error saving data: ' + err.message, 'error');
     }
   }
-}
-
-async function saveProductToServer(product){
-  const response = await fetch(`${API_BASE}/products`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(product)
-  });
-  if (!response.ok) throw new Error('Failed to save product');
-  return response.json();
-}
-
-async function updateServerProduct(product){
-  const response = await fetch(`${API_BASE}/products/${product.id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(product)
-  });
-  if (!response.ok) throw new Error('Failed to update product');
-  return response.json();
-}
-
-async function deleteServerProduct(id){
-  const response = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
-  if (!response.ok) throw new Error('Failed to delete product');
-}
-
-async function clearServerProducts(){
-  const response = await fetch(`${API_BASE}/products`, { method: 'DELETE' });
-  if (!response.ok) throw new Error('Failed to clear products');
 }
 
 function $(sel){return document.querySelector(sel)}
@@ -167,30 +133,25 @@ function initDashboardHandlers(){
     };
 
     try {
-      const savedProduct = await saveProductToServer(product);
-      adminState.products.push(normalizeServerProduct(savedProduct));
+      const savedRecord = await saveProductToSupabase(product);
+      product.id = savedRecord && savedRecord.id ? savedRecord.id : Date.now();
+      adminState.products.push(normalizeServerProduct(product));
       saveAdminState();
       $('#productForm').reset();
       renderProducts();
       showToast('Product added','success');
     } catch (err) {
       console.error(err);
-      showToast('Unable to save product to server','error');
+      showToast('Unable to save product to Supabase','error');
     }
   });
 
-  $('#clearProducts').addEventListener('click', async ()=>{
+  $('#clearProducts').addEventListener('click', ()=>{
     if (!confirm('Clear all admin products?')) return;
-    try {
-      await clearServerProducts();
-      adminState.products = [];
-      saveAdminState();
-      renderProducts();
-      showToast('All products cleared','success');
-    } catch (err) {
-      console.error(err);
-      showToast('Unable to clear products','error');
-    }
+    adminState.products = [];
+    saveAdminState();
+    renderProducts();
+    showToast('All products cleared','success');
   });
 
   // Export/Import handlers
@@ -226,26 +187,10 @@ function handleImportFile(file){
       const parsed = JSON.parse(e.target.result);
       if (Array.isArray(parsed.categories) && Array.isArray(parsed.products)){
         adminState.categories = parsed.categories;
+        adminState.products = parsed.products.map(normalizeServerProduct);
         saveAdminState();
-
-        const importedProducts = [];
-        for (const product of parsed.products) {
-          try {
-            const savedProduct = await saveProductToServer(product);
-            importedProducts.push(normalizeServerProduct(savedProduct));
-          } catch (err) {
-            console.warn('Failed to import product', err);
-          }
-        }
-
-        if (importedProducts.length) {
-          adminState.products = importedProducts;
-          saveAdminState();
-          mountDashboard();
-          showToast('Imported admin data','success');
-        } else {
-          showToast('No products were imported','error');
-        }
+        mountDashboard();
+        showToast('Imported admin data','success');
       } else {
         showToast('Invalid import file','error');
       }
@@ -378,16 +323,10 @@ document.addEventListener('change', (e)=>{
 
 async function deleteProduct(id){
   if (!confirm('Delete this product?')) return;
-  try {
-    await deleteServerProduct(id);
-    adminState.products = adminState.products.filter(p=>p.id!==id);
-    saveAdminState();
-    renderProducts();
-    showToast('Product deleted','success');
-  } catch (err) {
-    console.error(err);
-    showToast('Unable to delete product','error');
-  }
+  adminState.products = adminState.products.filter(p=>p.id!==id);
+  saveAdminState();
+  renderProducts();
+  showToast('Product deleted','success');
 }
 
 // Edit via modal
@@ -434,21 +373,15 @@ function showEditModal(id){
     p.images = images;
     p.image = images.length ? images[0] : 'img/placeholder.jpg';
 
-    try {
-      const updatedProduct = await updateServerProduct(p);
-      const normalized = normalizeServerProduct(updatedProduct);
-      const index = adminState.products.findIndex(item => item.id === normalized.id);
-      if (index !== -1) {
-        adminState.products[index] = normalized;
-      }
-      saveAdminState();
-      renderProducts();
-      showToast('Product updated','success');
-      $('#editModal').classList.add('hidden');
-    } catch (err) {
-      console.error(err);
-      showToast('Unable to update product','error');
+    const normalized = normalizeServerProduct(p);
+    const index = adminState.products.findIndex(item => item.id === normalized.id);
+    if (index !== -1) {
+      adminState.products[index] = normalized;
     }
+    saveAdminState();
+    renderProducts();
+    showToast('Product updated','success');
+    $('#editModal').classList.add('hidden');
 
     editForm.removeEventListener('submit', onSave);
   };

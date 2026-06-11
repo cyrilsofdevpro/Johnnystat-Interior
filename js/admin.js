@@ -44,7 +44,9 @@ async function saveProductToSupabase(product) {
   const { data, error } = await client.from('interiors').insert([
     {
       title: product.name,
-      image_url: product.image
+      image_url: product.image,
+      price: Number(product.price),
+      description: product.description
     }
   ]);
   if (error) throw error;

@@ -107,11 +107,12 @@ async function loadProducts() {
   // also fetch interiors from Supabase and include as products (display-only)
   try {
     const interiors = typeof fetchInteriorsPublic === 'function' ? await fetchInteriorsPublic() : [];
+    console.log('Loaded interiors', interiors);
     if (Array.isArray(interiors) && interiors.length) {
       const mapped = interiors.map(i => ({
         id: `i-${i.id}`,
         name: i.title || 'Interior',
-        price: Number(i.price) || 0,
+        price: i.price != null ? Number(i.price) : undefined,
         image: i.image_url,
         images: [i.image_url],
         category: 'interior',
@@ -198,7 +199,7 @@ function displayProducts(productsToDisplay) {
 
           <!-- Price -->
           <div class="flex justify-between items-center mb-4">
-            <span class="text-2xl font-bold text-amber-700">₦${product.price.toLocaleString()}</span>
+            <span class="text-2xl font-bold text-amber-700">${product.price != null ? `₦${Number(product.price).toLocaleString()}` : 'No price set'}</span>
             <span class="text-xs font-semibold text-green-600">${product.inStock ? 'In Stock' : 'Coming Soon'}</span>
           </div>
 
@@ -538,7 +539,7 @@ function openProductDetail(productId) {
             </div>
             <span style="font-size: 0.875rem; color: #78716b;">${product.rating} (${product.reviews} reviews)</span>
           </div>
-          <p style="font-size: 2.25rem; color: #b45309; font-weight: bold; margin-bottom: 1rem;">₦${product.price.toLocaleString()}</p>
+          <p style="font-size: 2.25rem; color: #b45309; font-weight: bold; margin-bottom: 1rem;">${product.price != null ? `₦${Number(product.price).toLocaleString()}` : 'No price set'}</p>
           <p style="color: #78716b; line-height: 1.7; margin-bottom: 2rem;">${product.description}</p>
           <button 
             onclick="cart.addItem(${product.id}); document.querySelector('.modal')?.remove();"

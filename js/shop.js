@@ -31,8 +31,6 @@ function normalizeStoredProduct(product) {
   };
 }
 
-let storedAdminProducts = JSON.parse(localStorage.getItem('adminProducts')) || [];
-
 const defaultProducts = [
   {
     id: 1,
@@ -102,33 +100,57 @@ const defaultProducts = [
   },
 ];
 
-let products = [
-  ...defaultProducts,
-  ...storedAdminProducts.map(normalizeStoredProduct)
-];
+let products = [...defaultProducts];
 
-// Listen for changes to admin products/categories from other tabs and update the shop list
-window.addEventListener('storage', (e) => {
-  if (e.key === 'adminProducts' || e.key === 'adminCategories') {
+async function fetchServerAdminProducts() {
+  const response = await fetch('/api/products');
+  if (!response.ok) throw new Error('Failed to load server products');
+  return response.json();
+}
+
+async function loadProducts() {
+  try {
+    const adminProducts = await fetchServerAdminProducts();
+    products = [...defaultProducts, ...adminProducts.map(normalizeStoredProduct)];
+    // also fetch interiors from Supabase and include as products (display-only)
     try {
-      const newStored = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-      const adminProducts = (Array.isArray(newStored) ? newStored : []).map(normalizeStoredProduct);
-      products = [...defaultProducts, ...adminProducts];
-      filteredProducts = products.slice();
-
-      // Update current view
-      if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        if (currentFilter && currentFilter !== 'all') {
-          displayProducts(products.filter(p => p.category === currentFilter));
-        } else {
-          displayProducts(products);
-        }
+      const interiors = typeof fetchInteriorsPublic === 'function' ? await fetchInteriorsPublic() : [];
+      if (Array.isArray(interiors) && interiors.length) {
+        const mapped = interiors.map(i => ({
+          id: `i-${i.id}`,
+          name: i.title || 'Interior',
+          price: 0,
+          image: i.image_url,
+          images: [i.image_url],
+          category: 'interior',
+          rating: 5,
+          reviews: 0,
+          description: i.title || '',
+          inStock: true
+        }));
+        products = [...products, ...mapped];
       }
-    } catch (err) {
-      console.warn('Error updating products from storage event', err);
+    } catch (e) {
+      console.warn('Failed to fetch public interiors', e);
     }
+  } catch (err) {
+    console.warn('Error loading remote admin products', err);
+    const fallback = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+    products = [...defaultProducts, ...(Array.isArray(fallback) ? fallback.map(normalizeStoredProduct) : [])];
   }
-});
+
+  if (currentFilter && currentFilter !== 'all') {
+    filteredProducts = products.filter(p => p.category === currentFilter);
+  } else {
+    filteredProducts = [...products];
+  }
+
+  if (currentSort) {
+    sortProducts(currentSort);
+  } else {
+    displayProducts(filteredProducts);
+  }
+}
 
 // STATE
 let filteredProducts = [...products];
@@ -139,6 +161,7 @@ let currentSort = '';
 document.addEventListener('DOMContentLoaded', () => {
   initializeCart();
   displayProducts(products);
+  loadProducts();
   setupEventListeners();
 });
 
@@ -215,7 +238,7 @@ function displayProducts(productsToDisplay) {
 }
 
 // FILTER PRODUCTS
-function filterProducts(category) {
+function filterProducts(category, element) {
   currentFilter = category;
   
   // Update button styles
@@ -223,8 +246,10 @@ function filterProducts(category) {
     btn.classList.remove('bg-amber-700', 'text-white', 'border-amber-700');
     btn.classList.add('bg-white', 'border-2', 'border-amber-700', 'text-amber-700');
   });
-  event.target.classList.add('bg-amber-700', 'text-white');
-  event.target.classList.remove('bg-white', 'border-2', 'border-amber-700', 'text-amber-700');
+  if (element) {
+    element.classList.add('bg-amber-700', 'text-white');
+    element.classList.remove('bg-white', 'border-2', 'border-amber-700', 'text-amber-700');
+  }
 
   if (category === 'all') {
     filteredProducts = [...products];

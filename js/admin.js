@@ -1,31 +1,75 @@
 // Admin dashboard script
-const ADMIN_USERNAME = 'Admin123@gmail.com';
-const ADMIN_PASSWORD = 'Admin1234';
+const API_BASE = '/api';
 
 const adminState = {
   categories: ['Living Room','Office','Bedroom'],
   products: []
 };
 
-function readAdminState(){
+function getSupabaseClient() {
+  if (!window.supabaseClient) throw new Error('Supabase client not initialized. Fill js/supabase-config.js and include js/supabase-client.js.');
+  return window.supabaseClient;
+}
+
+async function uploadFileToSupabase(file) {
+  const client = getSupabaseClient();
+  const filename = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`;
+  const path = `interiors/${filename}`;
+  const { data, error } = await client.storage.from(SUPABASE_BUCKET).upload(path, file, { cacheControl: '3600', upsert: false });
+  if (error) throw error;
+
+  const { data: urlData, error: urlError } = client.storage.from(SUPABASE_BUCKET).getPublicUrl(path);
+  if (urlError) throw urlError;
+  return urlData.publicUrl;
+}
+
+async function uploadFilesToSupabase(files) {
+  if (!files.length) return [];
+  return await Promise.all(files.map(uploadFileToSupabase));
+}
+
+function normalizeServerProduct(product){
+  const images = Array.isArray(product.images)
+    ? product.images
+    : (product.image ? [product.image] : ['img/placeholder.jpg']);
+
+  return {
+    ...product,
+    id: Number(product.id) || Date.now(),
+    images,
+    image: Array.isArray(images) && images.length ? images[0] : (product.image || 'img/placeholder.jpg')
+  };
+}
+
+async function fetchServerProducts(){
+  const response = await fetch(`${API_BASE}/products`);
+  if (!response.ok) throw new Error('Failed to load products from server');
+  return response.json();
+}
+
+async function readAdminState(){
   try {
     const cats = JSON.parse(localStorage.getItem('adminCategories'));
-    const prods = JSON.parse(localStorage.getItem('adminProducts'));
     if (Array.isArray(cats)) adminState.categories = cats;
+  } catch (err) {
+    console.warn('Could not parse admin categories from localStorage', err);
+  }
+
+  try {
+    const prods = await fetchServerProducts();
     if (Array.isArray(prods)) {
-      adminState.products = prods.map(p => {
-        const images = Array.isArray(p.images)
-          ? p.images
-          : (p.image ? [p.image] : ['img/placeholder.jpg']);
-        return {
-          ...p,
-          images,
-          image: Array.isArray(images) && images.length ? images[0] : 'img/placeholder.jpg'
-        };
-      });
+      adminState.products = prods.map(normalizeServerProduct);
     }
   } catch (err) {
-    console.warn('Could not parse admin state from localStorage', err);
+    console.warn('Could not load admin products from server', err);
+    try {
+      const prods = JSON.parse(localStorage.getItem('adminProducts'));
+      if (Array.isArray(prods)) {
+        adminState.products = prods.map(normalizeServerProduct);
+      }
+    } catch (fallbackErr) {
+      console.warn('Could not parse fallback admin products from localStorage', fallbackErr);
+    }
   }
 }
 
@@ -39,8 +83,37 @@ function saveAdminState(){
     } else {
       showToast('Error saving data: ' + err.message, 'error');
     }
-    throw err;
   }
+}
+
+async function saveProductToServer(product){
+  const response = await fetch(`${API_BASE}/products`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(product)
+  });
+  if (!response.ok) throw new Error('Failed to save product');
+  return response.json();
+}
+
+async function updateServerProduct(product){
+  const response = await fetch(`${API_BASE}/products/${product.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(product)
+  });
+  if (!response.ok) throw new Error('Failed to update product');
+  return response.json();
+}
+
+async function deleteServerProduct(id){
+  const response = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
+  if (!response.ok) throw new Error('Failed to delete product');
+}
+
+async function clearServerProducts(){
+  const response = await fetch(`${API_BASE}/products`, { method: 'DELETE' });
+  if (!response.ok) throw new Error('Failed to clear products');
 }
 
 function $(sel){return document.querySelector(sel)}
@@ -71,15 +144,19 @@ function initDashboardHandlers(){
     const desc = $('#pDesc').value.trim();
     const files = Array.from($('#pImages').files || []);
 
-    const images = files.length
-      ? await Promise.all(files.map(fileToDataUrl))
-      : ['img/placeholder.jpg'];
+    let images;
+    try {
+      images = files.length ? await uploadFilesToSupabase(files) : ['img/placeholder.jpg'];
+    } catch (uploadErr) {
+      console.error(uploadErr);
+      showToast('Image upload failed. Please check Supabase configuration and try again.', 'error');
+      return;
+    }
 
     if (!name) { showToast('Name is required','error'); return; }
     if (!price || price <= 0) { showToast('Enter a valid price','error'); return; }
 
     const product = {
-      id: Date.now(),
       name,
       price,
       category,
@@ -89,18 +166,31 @@ function initDashboardHandlers(){
       inStock: true
     };
 
-    adminState.products.push(product);
-    saveAdminState();
-    $('#productForm').reset();
-    renderProducts();
-    showToast('Product added','success');
+    try {
+      const savedProduct = await saveProductToServer(product);
+      adminState.products.push(normalizeServerProduct(savedProduct));
+      saveAdminState();
+      $('#productForm').reset();
+      renderProducts();
+      showToast('Product added','success');
+    } catch (err) {
+      console.error(err);
+      showToast('Unable to save product to server','error');
+    }
   });
 
-  $('#clearProducts').addEventListener('click', ()=>{
+  $('#clearProducts').addEventListener('click', async ()=>{
     if (!confirm('Clear all admin products?')) return;
-    adminState.products = [];
-    saveAdminState();
-    renderProducts();
+    try {
+      await clearServerProducts();
+      adminState.products = [];
+      saveAdminState();
+      renderProducts();
+      showToast('All products cleared','success');
+    } catch (err) {
+      console.error(err);
+      showToast('Unable to clear products','error');
+    }
   });
 
   // Export/Import handlers
@@ -131,60 +221,47 @@ function exportAdminData(){
 
 function handleImportFile(file){
   const reader = new FileReader();
-  reader.onload = (e)=>{
+  reader.onload = async (e)=>{
     try{
       const parsed = JSON.parse(e.target.result);
       if (Array.isArray(parsed.categories) && Array.isArray(parsed.products)){
         adminState.categories = parsed.categories;
-        adminState.products = parsed.products;
         saveAdminState();
-        mountDashboard();
-        showToast('Imported admin data','success');
+
+        const importedProducts = [];
+        for (const product of parsed.products) {
+          try {
+            const savedProduct = await saveProductToServer(product);
+            importedProducts.push(normalizeServerProduct(savedProduct));
+          } catch (err) {
+            console.warn('Failed to import product', err);
+          }
+        }
+
+        if (importedProducts.length) {
+          adminState.products = importedProducts;
+          saveAdminState();
+          mountDashboard();
+          showToast('Imported admin data','success');
+        } else {
+          showToast('No products were imported','error');
+        }
       } else {
         showToast('Invalid import file','error');
       }
     } catch(err){
+      console.error(err);
       showToast('Error importing file','error');
     }
   };
   reader.readAsText(file);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = $('#adminLoginForm');
-  const loginCard = $('#loginCard');
-  const dashboard = $('#dashboard');
-
-  readAdminState();
-
-  // logout button
-  $('#logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('adminAuth');
-    window.location.href = 'index.html';
-  });
-
-  // if already authenticated
-  if (localStorage.getItem('adminAuth') === 'true') {
-    loginCard.classList.add('hidden');
-    dashboard.classList.remove('hidden');
-    initDashboardHandlers();
-    mountDashboard();
-  }
-
-  loginForm.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const email = $('#loginEmail').value.trim();
-    const password = $('#loginPassword').value.trim();
-    if (email === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      localStorage.setItem('adminAuth','true');
-      loginCard.classList.add('hidden');
-      dashboard.classList.remove('hidden');
-      initDashboardHandlers();
-      mountDashboard();
-    } else {
-      showToast('Invalid credentials', 'error');
-    }
-  });
+document.addEventListener('DOMContentLoaded', async () => {
+  await readAdminState();
+  // initial render; actual auth (show/hide dashboard) handled by supabase-interiors.js
+  renderCategories();
+  renderProducts();
 });
 
 function mountDashboard(){
@@ -299,11 +376,18 @@ document.addEventListener('change', (e)=>{
   }
 });
 
-function deleteProduct(id){
+async function deleteProduct(id){
   if (!confirm('Delete this product?')) return;
-  adminState.products = adminState.products.filter(p=>p.id!==id);
-  saveAdminState();
-  renderProducts();
+  try {
+    await deleteServerProduct(id);
+    adminState.products = adminState.products.filter(p=>p.id!==id);
+    saveAdminState();
+    renderProducts();
+    showToast('Product deleted','success');
+  } catch (err) {
+    console.error(err);
+    showToast('Unable to delete product','error');
+  }
 }
 
 // Edit via modal
@@ -331,7 +415,13 @@ function showEditModal(id){
 
     let images = existingImages;
     if (files.length) {
-      images = await Promise.all(files.map(fileToDataUrl));
+      try {
+        images = await uploadFilesToSupabase(files);
+      } catch (uploadErr) {
+        console.error(uploadErr);
+        showToast('Image upload failed. Please check Supabase configuration and try again.', 'error');
+        return;
+      }
     }
 
     if (!name) { showToast('Name required','error'); return; }
@@ -343,10 +433,23 @@ function showEditModal(id){
     p.description = desc;
     p.images = images;
     p.image = images.length ? images[0] : 'img/placeholder.jpg';
-    saveAdminState();
-    renderProducts();
-    showToast('Product updated','success');
-    $('#editModal').classList.add('hidden');
+
+    try {
+      const updatedProduct = await updateServerProduct(p);
+      const normalized = normalizeServerProduct(updatedProduct);
+      const index = adminState.products.findIndex(item => item.id === normalized.id);
+      if (index !== -1) {
+        adminState.products[index] = normalized;
+      }
+      saveAdminState();
+      renderProducts();
+      showToast('Product updated','success');
+      $('#editModal').classList.add('hidden');
+    } catch (err) {
+      console.error(err);
+      showToast('Unable to update product','error');
+    }
+
     editForm.removeEventListener('submit', onSave);
   };
 

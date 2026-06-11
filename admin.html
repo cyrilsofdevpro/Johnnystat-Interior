@@ -70,10 +70,27 @@
         </div>
       </div>
 
-      <section class="mt-8 bg-white rounded-2xl shadow p-6">
-        <h3 class="text-xl font-semibold mb-4">Products</h3>
-        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-      </section>
+        <!-- Supabase Interiors Upload -->
+        <section id="interiorSection" class="mt-8 bg-white rounded-2xl shadow p-6">
+          <h3 class="text-xl font-semibold mb-4">Interiors (Supabase)</h3>
+          <form id="interiorForm" class="space-y-4 mb-4">
+            <input id="iTitle" type="text" placeholder="Title" class="w-full border rounded px-4 py-2 text-stone-900" required>
+            <div>
+              <label class="block text-sm mb-2">Image</label>
+              <input id="iImage" type="file" accept="image/*">
+            </div>
+            <div class="flex gap-3">
+              <button type="submit" class="bg-amber-700 text-white px-4 py-2 rounded">Upload to Supabase</button>
+            </div>
+          </form>
+
+          <div id="interiorsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <section class="mt-8 bg-white rounded-2xl shadow p-6">
+          <h3 class="text-xl font-semibold mb-4">Products</h3>
+          <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
     </div>
   </main>
   <!-- Edit modal -->
@@ -101,6 +118,10 @@
   <!-- Toast container -->
   <div id="adminToast" class="fixed bottom-6 right-6 space-y-2 z-50"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/supabase-interiors.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

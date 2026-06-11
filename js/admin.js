@@ -45,8 +45,7 @@ async function saveProductToSupabase(product) {
     {
       title: product.name,
       image_url: product.image,
-      price: Number(product.price),
-      description: product.description
+      price: Number(product.price)
     }
   ]);
   if (error) throw error;

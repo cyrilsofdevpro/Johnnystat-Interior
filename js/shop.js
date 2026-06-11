@@ -111,13 +111,13 @@ async function loadProducts() {
       const mapped = interiors.map(i => ({
         id: `i-${i.id}`,
         name: i.title || 'Interior',
-        price: 0,
+        price: Number(i.price) || 0,
         image: i.image_url,
         images: [i.image_url],
         category: 'interior',
         rating: 5,
         reviews: 0,
-        description: i.title || '',
+        description: i.description || i.title || '',
         inStock: true
       }));
       products = [...products, ...mapped];
@@ -204,7 +204,7 @@ function displayProducts(productsToDisplay) {
 
           <!-- Add to Cart Button -->
           <button 
-            onclick="addProductToCart(${product.id})"
+            onclick="addProductToCart('${product.id}')"
             ${product.inStock ? '' : 'disabled'}
             class="w-full py-3 bg-amber-700 text-white rounded-lg font-semibold hover:bg-amber-800 smooth-transition ${!product.inStock ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}"
           >
@@ -213,7 +213,7 @@ function displayProducts(productsToDisplay) {
 
           <!-- Quick View -->
           <button 
-            onclick="openProductDetail(${product.id})"
+            onclick="openProductDetail('${product.id}')"
             class="w-full mt-2 py-2 border-2 border-amber-700 text-amber-700 rounded-lg font-medium hover:bg-amber-50 smooth-transition"
           >
             Quick View
@@ -486,7 +486,7 @@ function openSearchModal() {
         p.description.toLowerCase().includes(query)
       );
       results.innerHTML = filtered.map(p => `
-        <div class="search-result-item" onclick="cart.addItem(${p.id}); document.querySelector('.modal')?.remove();">
+        <div class="search-result-item" onclick="cart.addItem('${p.id}'); document.querySelector('.modal')?.remove();">
           <img src="${p.image}" alt="${p.name}" class="w-16 h-16 object-cover rounded">
           <div style="flex: 1;">
             <strong>${p.name}</strong>

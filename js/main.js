@@ -173,7 +173,7 @@ function initializeEventListeners() {
           id: Date.now(),
           name: productName,
           price: productPrice,
-          image: 'img/placeholder.jpg'
+          image: 'img/hero.jpg'
         };
         
         cart.addItem(product);
@@ -285,7 +285,7 @@ function normalizeHomeProduct(product) {
     id: product.id,
     name: product.name || 'New Arrival',
     price: Number(product.price) || 0,
-    image: product.image || 'img/placeholder.jpg',
+    image: product.image || 'img/hero.jpg',
     description: product.description || 'New product from admin',
     rating: Number(product.rating) || 4.5,
     reviews: Number(product.reviews) || 0,
@@ -303,7 +303,7 @@ function renderHomeNewPicks() {
   grid.innerHTML = productsToShow.map(product => `
     <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-xl smooth-transition bg-white">
       <div class="relative h-72 overflow-hidden bg-gradient-to-br from-stone-100 to-amber-50">
-        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 smooth-transition" onerror="this.src='img/placeholder.jpg'">
+        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 smooth-transition" onerror="this.src='img/hero.jpg'">
         <div class="absolute top-4 right-4 bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-semibold">${product.badge}</div>
       </div>
       <div class="p-6">
@@ -396,7 +396,7 @@ function addAdminProduct(name, price, category, image) {
     name: cleanedName,
     price: productPrice,
     category: cleanedCategory,
-    image: image.trim() || 'img/placeholder.jpg',
+    image: image.trim() || 'img/hero.jpg',
   };
 
   adminState.products.push(newProduct);

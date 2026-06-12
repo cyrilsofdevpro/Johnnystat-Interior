@@ -15,13 +15,13 @@ function normalizeCategory(category) {
 function normalizeStoredProduct(product) {
   const images = Array.isArray(product.images)
     ? product.images
-    : (product.image ? [product.image] : ['img/placeholder.jpg']);
+    : (product.image ? [product.image] : ['img/hero.jpg']);
 
   return {
     id: product.id,
     name: product.name || 'New Product',
     price: Number(product.price) || 0,
-    image: images[0] || 'img/placeholder.jpg',
+    image: images[0] || 'img/hero.jpg',
     images,
     category: normalizeCategory(product.category || ''),
     rating: Number(product.rating) || 4.5,
@@ -176,7 +176,7 @@ function displayProducts(productsToDisplay) {
             src="${imageSrc}"
             alt="${product.name}" 
             class="w-full h-full object-cover group-hover:scale-105 smooth-transition"
-            onerror="this.src='img/placeholder.jpg'"
+            onerror="this.src='img/hero.jpg'"
           >
           <div class="absolute top-4 right-4 flex flex-col gap-2">
             ${product.rating >= 4.8 ? '<span class="bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Best Seller</span>' : ''}

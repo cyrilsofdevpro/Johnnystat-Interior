@@ -29,14 +29,14 @@ async function uploadFilesToSupabase(files) {
 function normalizeServerProduct(product){
   const images = Array.isArray(product.images)
     ? product.images
-    : (product.image ? [product.image] : ['img/placeholder.jpg']);
+    : (product.image ? [product.image] : ['img/hero.jpg']);
 
   return {
     ...product,
     price: product.price != null ? Number(product.price) : undefined,
     id: product.id || Date.now(),
     images,
-    image: Array.isArray(images) && images.length ? images[0] : (product.image || 'img/placeholder.jpg')
+    image: Array.isArray(images) && images.length ? images[0] : (product.image || 'img/hero.jpg')
   };
 }
 

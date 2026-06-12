@@ -33,6 +33,7 @@ function normalizeServerProduct(product){
 
   return {
     ...product,
+    price: product.price != null ? Number(product.price) : undefined,
     id: product.id || Date.now(),
     images,
     image: Array.isArray(images) && images.length ? images[0] : (product.image || 'img/placeholder.jpg')
@@ -332,7 +333,7 @@ function renderProducts(){
         <img src="${imageSrc}" alt="${p.name}" class="h-40 w-full object-cover mb-2 rounded">
         <h4 class="font-semibold">${p.name}</h4>
         <p class="text-sm text-gray-600">${p.category}</p>
-        <p class="mt-2 text-amber-700 font-bold">₦${p.price.toLocaleString()}</p>
+        <p class="mt-2 text-amber-700 font-bold">${p.price != null ? '₦' + Number(p.price).toLocaleString() : '<span class="text-sm text-gray-500">No price</span>'}</p>
         <p class="text-sm mt-2">${p.description||''}</p>
         <div class="flex gap-2 mt-3">
           <button class="px-3 py-1 bg-amber-700 text-white rounded" onclick="showEditModal('${p.id}')">Edit</button>

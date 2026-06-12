@@ -286,8 +286,8 @@ function renderProducts(){
         <p class="mt-2 text-amber-700 font-bold">₦${p.price.toLocaleString()}</p>
         <p class="text-sm mt-2">${p.description||''}</p>
         <div class="flex gap-2 mt-3">
-          <button class="px-3 py-1 bg-amber-700 text-white rounded" onclick="showEditModal(${p.id})">Edit</button>
-          <button class="px-3 py-1 bg-gray-200 rounded" onclick="deleteProduct(${p.id})">Delete</button>
+          <button class="px-3 py-1 bg-amber-700 text-white rounded" onclick="showEditModal('${p.id}')">Edit</button>
+          <button class="px-3 py-1 bg-gray-200 rounded" onclick="deleteProduct('${p.id}')">Delete</button>
         </div>
       </div>
     `;

@@ -140,6 +140,49 @@ async function loadProducts() {
   }
 }
 
+// PERIODIC SYNC: Refetch products every 30 seconds to catch admin deletions/updates
+let syncInterval;
+function startProductSync() {
+  syncInterval = setInterval(async () => {
+    try {
+      const interiors = typeof fetchInteriorsPublic === 'function' ? await fetchInteriorsPublic() : [];
+      if (Array.isArray(interiors)) {
+        // Rebuild products with fresh interiors
+        const mapped = interiors.map(i => ({
+          id: `i-${i.id}`,
+          name: i.title || 'Interior',
+          price: i.price != null ? Number(i.price) : undefined,
+          image: i.image_url,
+          images: [i.image_url],
+          category: 'interior',
+          rating: 5,
+          reviews: 0,
+          description: i.description || i.title || '',
+          inStock: true
+        }));
+        
+        // Keep defaultProducts but replace interiors with fresh ones
+        products = [...defaultProducts, ...mapped];
+        
+        // Re-apply current filter and sort
+        if (currentFilter && currentFilter !== 'all') {
+          filteredProducts = products.filter(p => p.category === currentFilter);
+        } else {
+          filteredProducts = [...products];
+        }
+        
+        if (currentSort) {
+          sortProducts(currentSort);
+        } else {
+          displayProducts(filteredProducts);
+        }
+      }
+    } catch (e) {
+      console.warn('Periodic sync failed', e);
+    }
+  }, 30000); // Refetch every 30 seconds
+}
+
 // STATE
 let filteredProducts = [...products];
 let currentFilter = 'all';
@@ -150,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeCart();
   displayProducts(products);
   loadProducts();
+  startProductSync();
   setupEventListeners();
 });
 

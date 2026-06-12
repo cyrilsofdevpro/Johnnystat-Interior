@@ -103,20 +103,30 @@ async function readAdminState(){
     console.warn('Could not load admin products from localStorage', err);
   }
 
-  // Merge in Supabase-stored interiors so admin can manage them too
+  // Fetch current Supabase interiors to sync with DB state
   try {
     const interiors = await fetchInteriorsForAdmin();
-    if (Array.isArray(interiors) && interiors.length) {
-      // avoid duplicates by id
+    if (Array.isArray(interiors)) {
+      const supabaseIds = new Set(interiors.map(i => String(i.id)));
+      
+      // Filter local products: keep numeric IDs (local) + keep UUIDs only if still in Supabase
+      adminState.products = adminState.products.filter(p => {
+        const isNumeric = !isNaN(Number(p.id));
+        if (isNumeric) return true; // keep local products
+        return supabaseIds.has(String(p.id)); // keep Supabase product only if it still exists
+      });
+      
+      // Merge in any Supabase interiors not already in local products
       const existingIds = new Set(adminState.products.map(p => String(p.id)));
       const newItems = interiors.filter(i => !existingIds.has(String(i.id))).map(normalizeServerProduct);
       if (newItems.length) {
         adminState.products = [...adminState.products, ...newItems];
-        saveAdminState();
       }
+      
+      saveAdminState();
     }
   } catch (e) {
-    console.warn('Could not merge Supabase interiors into admin state', e);
+    console.warn('Could not sync Supabase interiors into admin state', e);
   }
 }
 

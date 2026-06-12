@@ -52,6 +52,39 @@ async function saveProductToSupabase(product) {
   return data && data[0];
 }
 
+async function fetchInteriorsForAdmin() {
+  if (!window.supabaseClient) return [];
+  const client = window.supabaseClient;
+  const { data, error } = await client.from('interiors').select('*').order('created_at', { ascending: false });
+  if (error) {
+    console.warn('Failed to fetch interiors for admin', error);
+    return [];
+  }
+  return (data || []).map(i => ({
+    id: i.id,
+    name: i.title || 'Interior',
+    price: i.price != null ? Number(i.price) : undefined,
+    image: i.image_url,
+    images: i.image_url ? [i.image_url] : ['img/placeholder.jpg'],
+    category: 'interior',
+    description: i.description || i.title || '',
+    inStock: true
+  }));
+}
+
+async function updateProductToSupabase(product) {
+  if (!window.supabaseClient) throw new Error('Supabase client not initialized');
+  const client = window.supabaseClient;
+  const payload = {
+    title: product.name,
+    image_url: product.image,
+    price: Number(product.price)
+  };
+  const { data, error } = await client.from('interiors').update(payload).eq('id', product.id).select();
+  if (error) throw error;
+  return data && data[0];
+}
+
 async function readAdminState(){
   try {
     const cats = JSON.parse(localStorage.getItem('adminCategories'));
@@ -61,12 +94,28 @@ async function readAdminState(){
   }
 
   try {
-    const prods = JSON.parse(localStorage.getItem('adminProducts'));
+    const prods = JSON.parse(localStorage.getItem('adminProducts')) || [];
     if (Array.isArray(prods)) {
       adminState.products = prods.map(normalizeServerProduct);
     }
   } catch (err) {
     console.warn('Could not load admin products from localStorage', err);
+  }
+
+  // Merge in Supabase-stored interiors so admin can manage them too
+  try {
+    const interiors = await fetchInteriorsForAdmin();
+    if (Array.isArray(interiors) && interiors.length) {
+      // avoid duplicates by id
+      const existingIds = new Set(adminState.products.map(p => String(p.id)));
+      const newItems = interiors.filter(i => !existingIds.has(String(i.id))).map(normalizeServerProduct);
+      if (newItems.length) {
+        adminState.products = [...adminState.products, ...newItems];
+        saveAdminState();
+      }
+    }
+  } catch (e) {
+    console.warn('Could not merge Supabase interiors into admin state', e);
   }
 }
 
@@ -324,10 +373,21 @@ document.addEventListener('change', (e)=>{
 
 async function deleteProduct(id){
   if (!confirm('Delete this product?')) return;
-  adminState.products = adminState.products.filter(p=>p.id!==id);
-  saveAdminState();
-  renderProducts();
-  showToast('Product deleted','success');
+  try {
+    // if id looks non-numeric, assume it's a Supabase record id and delete from DB
+    if (isNaN(Number(id)) && window.supabaseClient) {
+      const client = window.supabaseClient;
+      const { error } = await client.from('interiors').delete().eq('id', id);
+      if (error) throw error;
+    }
+    adminState.products = adminState.products.filter(p=>String(p.id)!==String(id));
+    saveAdminState();
+    renderProducts();
+    showToast('Product deleted','success');
+  } catch (err) {
+    console.error(err);
+    showToast('Unable to delete product','error');
+  }
 }
 
 // Edit via modal
@@ -374,15 +434,26 @@ function showEditModal(id){
     p.images = images;
     p.image = images.length ? images[0] : 'img/placeholder.jpg';
 
-    const normalized = normalizeServerProduct(p);
-    const index = adminState.products.findIndex(item => item.id === normalized.id);
-    if (index !== -1) {
-      adminState.products[index] = normalized;
+    try {
+      // If product id is non-numeric, update Supabase record
+      if (isNaN(Number(p.id)) && window.supabaseClient) {
+        const updated = await updateProductToSupabase(p);
+        if (updated && updated.id) p.id = updated.id;
+      }
+
+      const normalized = normalizeServerProduct(p);
+      const index = adminState.products.findIndex(item => String(item.id) === String(normalized.id));
+      if (index !== -1) {
+        adminState.products[index] = normalized;
+      }
+      saveAdminState();
+      renderProducts();
+      showToast('Product updated','success');
+      $('#editModal').classList.add('hidden');
+    } catch (err) {
+      console.error(err);
+      showToast('Unable to update product','error');
     }
-    saveAdminState();
-    renderProducts();
-    showToast('Product updated','success');
-    $('#editModal').classList.add('hidden');
 
     editForm.removeEventListener('submit', onSave);
   };
